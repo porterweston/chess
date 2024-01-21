@@ -56,7 +56,6 @@ public class ChessBoard {
                 this.board[i][j] = null;
             }
         }
-        System.out.println(this.board);
         //white pieces
         this.addPiece(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
         this.addPiece(new ChessPosition(1, 2), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
