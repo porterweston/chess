@@ -1,0 +1,9 @@
+package chess;
+
+import java.util.Collection;
+
+public class KnightMovesCalculator {
+    Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position){
+        return null;
+    }
+}
