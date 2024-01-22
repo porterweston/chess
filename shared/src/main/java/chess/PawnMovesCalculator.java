@@ -1,11 +1,11 @@
 package chess;
 
 import java.util.Collection;
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 
 public class PawnMovesCalculator {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position){
-        Collection<ChessMove> pawnMoves = new ArrayDeque<ChessMove>();
+        Collection<ChessMove> pawnMoves = new ArrayList<ChessMove>();
         ChessPiece piece = board.getPiece(position);
         ChessGame.TeamColor team = piece.getTeamColor();
         int dir = 0;
@@ -20,7 +20,6 @@ public class PawnMovesCalculator {
         ChessMove forwardOne = new ChessMove(position, new ChessPosition(position.getRow()+(dir), position.getColumn()), null);
         if (board.getPiece(forwardOne.getEndPosition()) == null){
             if (promotion(forwardOne.getEndPosition(), team)){
-                System.out.println("Adding promotion moves...");
                 pawnMoves.add(new ChessMove(position, forwardOne.getEndPosition(), ChessPiece.PieceType.ROOK));
                 pawnMoves.add(new ChessMove(position, forwardOne.getEndPosition(), ChessPiece.PieceType.KNIGHT));
                 pawnMoves.add(new ChessMove(position, forwardOne.getEndPosition(), ChessPiece.PieceType.BISHOP));
@@ -76,13 +75,10 @@ public class PawnMovesCalculator {
     }
 
     private boolean promotion(ChessPosition endPosition, ChessGame.TeamColor team){
-        System.out.println("Checking promotion status");
         if ((endPosition.getRow() == 8 && team == ChessGame.TeamColor.WHITE) ||
             (endPosition.getRow() == 1 && team == ChessGame.TeamColor.BLACK)){
-            System.out.println("Promotion!");
             return true;
         }
-        System.out.println("Not a promotion!");
         return false;
     }
 }

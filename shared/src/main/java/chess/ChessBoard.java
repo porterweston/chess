@@ -11,9 +11,6 @@ import java.util.Arrays;
 public class ChessBoard {
     // two-dimensional array representing the chess board, rows x columns
     private ChessPiece[][] board = new ChessPiece[8][8];
-    public ChessBoard() {
-        this.resetBoard();
-    }
 
     /**
      * Adds a chess piece to the chessboard
