@@ -15,54 +15,49 @@ public class BishopMovesCalculator {
         */
 
         //up left
-        ChessPosition curPosition = position;
+        ChessPosition curPosition = new ChessPosition(position.getRow()+1, position.getColumn()-1);
         while (curPosition.getColumn() >= 1 && curPosition.getRow() <= 8) {
-            curPosition = new ChessPosition(curPosition.getRow()+1, curPosition.getColumn()-1);
-            var p = board.getPiece(curPosition);
-            System.out.println(p);
             if (board.getPiece(curPosition) != null){
                 if (board.getPiece(curPosition).getTeamColor() != team) bishopMoves.add(new ChessMove(position, curPosition, null));
                 break;
             }
             bishopMoves.add(new ChessMove(position, curPosition, null));
+            curPosition = new ChessPosition(curPosition.getRow()+1, curPosition.getColumn()-1);
         }
 
         //up right
-        curPosition = position;
+        curPosition = new ChessPosition(position.getRow()+1, position.getColumn()+1);
         while (curPosition.getColumn() <= 8 && curPosition.getRow() <= 8) {
-            curPosition = new ChessPosition(curPosition.getRow()+1, curPosition.getColumn()+1);
             if (board.getPiece(curPosition) != null){
                 if (board.getPiece(curPosition).getTeamColor() != team) bishopMoves.add(new ChessMove(position, curPosition, null));
                 break;
             }
             bishopMoves.add(new ChessMove(position, curPosition, null));
+            curPosition = new ChessPosition(curPosition.getRow()+1, curPosition.getColumn()+1);
         }
 
         //down left
-        curPosition = position;
+        curPosition = new ChessPosition(position.getRow()-1, position.getColumn()-1);
         while (curPosition.getColumn() >= 1 && curPosition.getRow() >= 1) {
-            curPosition = new ChessPosition(curPosition.getRow()-1, curPosition.getColumn()-1);
             if (board.getPiece(curPosition) != null){
                 if (board.getPiece(curPosition).getTeamColor() != team) bishopMoves.add(new ChessMove(position, curPosition, null));
                 break;
             }
             bishopMoves.add(new ChessMove(position, curPosition, null));
+            curPosition = new ChessPosition(curPosition.getRow()-1, curPosition.getColumn()-1);
         }
 
         //down right
-        curPosition = position;
+        curPosition = new ChessPosition(position.getRow()-1, position.getColumn()+1);
         while (curPosition.getColumn() <= 8 && curPosition.getRow() >= 1) {
-            curPosition = new ChessPosition(curPosition.getRow()-1, curPosition.getColumn()+1);
             if (board.getPiece(curPosition) != null){
                 if (board.getPiece(curPosition).getTeamColor() != team) bishopMoves.add(new ChessMove(position, curPosition, null));
                 break;
             }
             bishopMoves.add(new ChessMove(position, curPosition, null));
+            curPosition = new ChessPosition(curPosition.getRow()-1, curPosition.getColumn()+1);
         }
 
-        for (ChessMove move : bishopMoves){
-            System.out.println(move.getEndPosition());
-        }
         return bishopMoves;
     }
 }
