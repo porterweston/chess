@@ -40,9 +40,10 @@ public class PawnMovesCalculator {
         }
 
         //capture right
-        ChessMove captureRight = new ChessMove(position, new ChessPosition(position.getRow()+(dir), position.getColumn()+1), null);
-        if (board.getPiece(captureRight.getEndPosition()) != null){
-            if (board.getPiece(captureRight.getEndPosition()).getTeamColor() != team){
+        ChessPosition endPos = new ChessPosition(position.getRow()+(dir), position.getColumn()+1);
+        if (endPos.isInBounds()){
+            ChessMove captureRight = new ChessMove(position, endPos, null);
+            if (board.getPiece(captureRight.getEndPosition()) != null && board.getPiece(captureRight.getEndPosition()).getTeamColor() != team){
                 if (promotion(captureRight.getEndPosition(), team)){
                     pawnMoves.add(new ChessMove(position, captureRight.getEndPosition(), ChessPiece.PieceType.ROOK));
                     pawnMoves.add(new ChessMove(position, captureRight.getEndPosition(), ChessPiece.PieceType.KNIGHT));
@@ -56,9 +57,10 @@ public class PawnMovesCalculator {
         }
 
         //capture left
-        ChessMove captureLeft = new ChessMove(position, new ChessPosition(position.getRow()+(dir), position.getColumn()-1), null);
-        if (board.getPiece(captureLeft.getEndPosition()) != null){
-            if (board.getPiece(captureLeft.getEndPosition()).getTeamColor() != team){
+        endPos = new ChessPosition(position.getRow()+(dir), position.getColumn()-1);
+        if (endPos.isInBounds()){
+            ChessMove captureLeft = new ChessMove(position, endPos, null);
+            if (board.getPiece(captureLeft.getEndPosition()) != null && board.getPiece(captureLeft.getEndPosition()).getTeamColor() != team){
                 if (promotion(captureLeft.getEndPosition(), team)){
                     pawnMoves.add(new ChessMove(position, captureLeft.getEndPosition(), ChessPiece.PieceType.ROOK));
                     pawnMoves.add(new ChessMove(position, captureLeft.getEndPosition(), ChessPiece.PieceType.KNIGHT));

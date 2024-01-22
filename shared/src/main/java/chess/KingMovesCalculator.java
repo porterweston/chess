@@ -13,7 +13,6 @@ public class KingMovesCalculator {
             MOVES
         */
 
-
         //up left
         ChessPosition endPos = new ChessPosition(position.getRow()+1, position.getColumn()-1);
         if (endPos.isInBounds()){
