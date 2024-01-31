@@ -93,7 +93,16 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //cycle through every square on the board
+        for (int i=0; i<8; i++){
+            for (int j=0; j<8; j++){
+                //only calculate opposing team pieces
+                if (this.board.getPiece(new ChessPosition(i, j)) != null && this.board.getPiece(new ChessPosition(i, j)).getTeamColor() != teamColor){
+                    //get all valid moves of the piece on this square
+                    Collection<ChessMove> validMoves = this.validMoves(new ChessPosition(i, j));
+                }
+            }
+        }
     }
 
     /**
@@ -118,8 +127,8 @@ public class ChessGame {
         //cycle through every square on the board
         for (int i=0; i<8; i++){
             for (int j=0; j<8; j++){
-                //get all valid moves of the piece on this square
                 if (this.board.getPiece(new ChessPosition(i, j)) != null){
+                    //get all valid moves of the piece on this square
                     Collection<ChessMove> validMoves = this.validMoves(new ChessPosition(i, j));
                     stalemate = validMoves.isEmpty();
                 }
@@ -171,5 +180,22 @@ public class ChessGame {
         this.board.addPiece(move.getStartPosition(), piece);
         this.board.addPiece(move.getEndPosition(), otherPiece);
         return isValid;
+    }
+
+    /**
+     * Gets the king on the board
+     *
+     * @return the king
+     */
+    private ChessPiece getKing(){
+        //cycle through every square on the board
+        for (int i=0; i<8; i++){
+            for (int j=0; j<8; j++){
+                ChessPiece piece = this.board.getPiece(new ChessPosition(i, j));
+                if (piece != null){
+                    if (piece.getPieceType() == ChessPiece.PieceType.KING) return piece;
+                }
+            }
+        }
     }
 }
