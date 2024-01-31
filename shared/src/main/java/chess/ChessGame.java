@@ -10,15 +10,18 @@ import java.util.Collection;
  */
 public class ChessGame {
 
-    public ChessGame() {
+    private ChessBoard board;
+    private ChessGame.TeamColor teamTurn;
 
+    public ChessGame() {
+        this.teamTurn = ChessGame.TeamColor.WHITE;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return this.teamTurn;
     }
 
     /**
@@ -27,7 +30,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        this.teamTurn = team;
     }
 
     /**
@@ -46,7 +49,17 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = this.board.getPiece(startPosition);
+        if (piece == null){
+            return null;
+        }
+        else{
+            //get all possible moves
+            Collection<ChessMove> validMoves = piece.pieceMoves(this.board, startPosition);
+            //simulate each move, if it fails then remove it from validMoves
+            validMoves.removeIf(move -> !this.isValidMove(move));
+            return validMoves;
+        }
     }
 
     /**
@@ -56,8 +69,19 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        //check that the move is valid
+        Collection<ChessMove> validMoves = this.validMoves(move.getStartPosition());
+        if (!validMoves.contains(move)){
+            throw new InvalidMoveException("Invalid move");
+        }
+        //get a reference to the piece to be moved
+        ChessPiece piece = this.board.getPiece(move.getStartPosition());
+        //set the piece to null
+        this.board.addPiece(move.getStartPosition(), null);
+        //move the piece to the move's end position
+        this.board.addPiece(move.getEndPosition(), piece);
     }
+
 
     /**
      * Determines if the given team is in check
@@ -96,7 +120,8 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
+        this.board.resetBoard();
     }
 
     /**
@@ -105,6 +130,24 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.board;
+    }
+
+    /**
+     * Simulates a given move to check if the result will put their king in check
+     *
+     * @param move the move to simulate
+     * @return if the simulated move is valid
+     */
+    private boolean isValidMove(ChessMove move){
+        //fix this line to be a deepcopy of board
+        ChessBoard boardCopy = this.board;
+        //get a reference to the piece to be moved
+        ChessPiece piece = boardCopy.getPiece(move.getStartPosition());
+        //set the piece to null
+        boardCopy.addPiece(move.getStartPosition(), null);
+        //move the piece to the move's end position
+        boardCopy.addPiece(move.getEndPosition(), piece);
+        return !this.isInCheck(this.getTeamTurn());
     }
 }
