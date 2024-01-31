@@ -80,6 +80,9 @@ public class ChessGame {
         this.board.addPiece(move.getStartPosition(), null);
         //move the piece to the move's end position
         this.board.addPiece(move.getEndPosition(), piece);
+        if (move.getPromotionPiece() != null){
+            this.board.addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
+        }
     }
 
 
@@ -111,7 +114,18 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        boolean stalemate = false;
+        //cycle through every square on the board
+        for (int i=0; i<8; i++){
+            for (int j=0; j<8; j++){
+                //get all valid moves of the piece on this square
+                if (this.board.getPiece(new ChessPosition(i, j)) != null){
+                    Collection<ChessMove> validMoves = this.validMoves(new ChessPosition(i, j));
+                    stalemate = validMoves.isEmpty();
+                }
+            }
+        }
+        return stalemate;
     }
 
     /**
@@ -134,20 +148,28 @@ public class ChessGame {
     }
 
     /**
-     * Simulates a given move to check if the result will put their king in check
+     * Simulates a given move to check if it's valid
+     * (If the move is valid, the king is not left in check, and it's their turn)
      *
      * @param move the move to simulate
      * @return if the simulated move is valid
      */
     private boolean isValidMove(ChessMove move){
-        //fix this line to be a deepcopy of board
-        ChessBoard boardCopy = this.board;
-        //get a reference to the piece to be moved
-        ChessPiece piece = boardCopy.getPiece(move.getStartPosition());
-        //set the piece to null
-        boardCopy.addPiece(move.getStartPosition(), null);
-        //move the piece to the move's end position
-        boardCopy.addPiece(move.getEndPosition(), piece);
-        return !this.isInCheck(this.getTeamTurn());
+        //get the moving piece and the piece at its end position
+        ChessPiece piece = this.board.getPiece(move.getStartPosition());
+        ChessPiece otherPiece = this.board.getPiece(move.getEndPosition());
+        //make the move
+        try{
+            this.makeMove(move);
+        }
+        catch(InvalidMoveException e){
+            return false;
+        }
+        //check if the king was left in check or if it's their turn
+        boolean isValid = !this.isInCheck(this.getTeamTurn()) && this.getTeamTurn() == piece.getTeamColor();
+        //set the board back to its position before the move was made
+        this.board.addPiece(move.getStartPosition(), piece);
+        this.board.addPiece(move.getEndPosition(), otherPiece);
+        return isValid;
     }
 }
