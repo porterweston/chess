@@ -97,12 +97,20 @@ public class ChessGame {
         for (int i=0; i<8; i++){
             for (int j=0; j<8; j++){
                 //only calculate opposing team pieces
-                if (this.board.getPiece(new ChessPosition(i, j)) != null && this.board.getPiece(new ChessPosition(i, j)).getTeamColor() != teamColor){
+                ChessPiece piece = this.board.getPiece(new ChessPosition(i, j));
+                if (piece != null && piece.getTeamColor() != teamColor){
                     //get all valid moves of the piece on this square
                     Collection<ChessMove> validMoves = this.validMoves(new ChessPosition(i, j));
+                    ChessPosition kingPosition = this.getKingPosition();
+                    for (ChessMove move : validMoves){
+                        if (move.getEndPosition() == kingPosition){
+                            return true;
+                        }
+                    }
                 }
             }
         }
+        return false;
     }
 
     /**
@@ -183,17 +191,17 @@ public class ChessGame {
     }
 
     /**
-     * Gets the king on the board
+     * Gets the king's position on the board
      *
      * @return the king
      */
-    private ChessPiece getKing(){
+    private ChessPosition getKingPosition(){
         //cycle through every square on the board
         for (int i=0; i<8; i++){
             for (int j=0; j<8; j++){
                 ChessPiece piece = this.board.getPiece(new ChessPosition(i, j));
                 if (piece != null){
-                    if (piece.getPieceType() == ChessPiece.PieceType.KING) return piece;
+                    if (piece.getPieceType() == ChessPiece.PieceType.KING) return new ChessPosition(i, j);
                 }
             }
         }
