@@ -3,6 +3,13 @@ package chess;
 import java.util.Collection;
 
 /**
+ * RECURSION ERRORS:
+ * validMoves calls isValidMove, which calls isInCheck, which calls validMoves, which calls...
+ *      fixed by making isInCheck call pieceMoves instead of validMoves
+ * validMoves calls isValidMove, which calls makeMove, which calls validMoves, which calls...
+ */
+
+/**
  * For a class that can manage a chess game, making moves on a board
  * <p>
  * Note: You can add to this class, but you may not alter
@@ -74,15 +81,7 @@ public class ChessGame {
         if (!validMoves.contains(move)){
             throw new InvalidMoveException("Invalid move");
         }
-        //get a reference to the piece to be moved
-        ChessPiece piece = this.board.getPiece(move.getStartPosition());
-        //set the piece to null
-        this.board.addPiece(move.getStartPosition(), null);
-        //move the piece to the move's end position
-        this.board.addPiece(move.getEndPosition(), piece);
-        if (move.getPromotionPiece() != null){
-            this.board.addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
-        }
+        this.simulateMove(move);
     }
 
 
@@ -94,15 +93,15 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         //cycle through every square on the board
-        for (int i=0; i<8; i++){
-            for (int j=0; j<8; j++){
+        for (int i=1; i<9; i++){
+            for (int j=1; j<9; j++){
                 //only calculate opposing team pieces
                 ChessPiece piece = this.board.getPiece(new ChessPosition(i, j));
                 if (piece != null && piece.getTeamColor() != teamColor){
-                    //get all valid moves of the piece on this square
-                    Collection<ChessMove> validMoves = this.validMoves(new ChessPosition(i, j));
+                    //get all moves of the piece on this square
+                    Collection<ChessMove> moves = piece.pieceMoves(this.board, new ChessPosition(i, j));
                     ChessPosition kingPosition = this.getKingPosition();
-                    for (ChessMove move : validMoves){
+                    for (ChessMove move : moves){
                         if (move.getEndPosition() == kingPosition){
                             return true;
                         }
@@ -133,8 +132,8 @@ public class ChessGame {
     public boolean isInStalemate(TeamColor teamColor) {
         boolean stalemate = false;
         //cycle through every square on the board
-        for (int i=0; i<8; i++){
-            for (int j=0; j<8; j++){
+        for (int i=1; i<9; i++){
+            for (int j=1; j<9; j++){
                 if (this.board.getPiece(new ChessPosition(i, j)) != null){
                     //get all valid moves of the piece on this square
                     Collection<ChessMove> validMoves = this.validMoves(new ChessPosition(i, j));
@@ -166,9 +165,9 @@ public class ChessGame {
 
     /**
      * Simulates a given move to check if it's valid
-     * (If the move is valid, the king is not left in check, and it's their turn)
+     * (If the king is not left in check, and it's their turn)
      *
-     * @param move the move to simulate
+     * @param move the move to check
      * @return if the simulated move is valid
      */
     private boolean isValidMove(ChessMove move){
@@ -176,12 +175,7 @@ public class ChessGame {
         ChessPiece piece = this.board.getPiece(move.getStartPosition());
         ChessPiece otherPiece = this.board.getPiece(move.getEndPosition());
         //make the move
-        try{
-            this.makeMove(move);
-        }
-        catch(InvalidMoveException e){
-            return false;
-        }
+        this.simulateMove(move);
         //check if the king was left in check or if it's their turn
         boolean isValid = !this.isInCheck(this.getTeamTurn()) && this.getTeamTurn() == piece.getTeamColor();
         //set the board back to its position before the move was made
@@ -191,19 +185,38 @@ public class ChessGame {
     }
 
     /**
+     * Moves a piece on the board
+     *
+     * @param move the move to simulate
+     */
+    private void simulateMove(ChessMove move){
+        //get a reference to the piece to be moved
+        ChessPiece piece = this.board.getPiece(move.getStartPosition());
+        //set the piece to null
+        this.board.addPiece(move.getStartPosition(), null);
+        //move the piece to the move's end position
+        this.board.addPiece(move.getEndPosition(), piece);
+        if (move.getPromotionPiece() != null){
+            this.board.addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
+        }
+    }
+
+    /**
      * Gets the king's position on the board
      *
      * @return the king
      */
     private ChessPosition getKingPosition(){
         //cycle through every square on the board
-        for (int i=0; i<8; i++){
-            for (int j=0; j<8; j++){
+        for (int i=1; i<9; i++){
+            for (int j=1; j<9; j++){
                 ChessPiece piece = this.board.getPiece(new ChessPosition(i, j));
                 if (piece != null){
                     if (piece.getPieceType() == ChessPiece.PieceType.KING) return new ChessPosition(i, j);
                 }
             }
         }
+        //king wasn't found
+        return null;
     }
 }
