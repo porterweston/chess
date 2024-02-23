@@ -79,7 +79,7 @@ public class ChessGame {
         //check that the move is valid
         Collection<ChessMove> validMoves = this.validMoves(move.getStartPosition());
         if (!validMoves.contains(move)){
-            throw new InvalidMoveException("Invalid move");
+            throw new InvalidMoveException("Invalid move!");
         }
         this.simulateMove(move);
     }
@@ -100,9 +100,9 @@ public class ChessGame {
                 if (piece != null && piece.getTeamColor() != teamColor){
                     //get all moves of the piece on this square
                     Collection<ChessMove> moves = piece.pieceMoves(this.board, new ChessPosition(i, j));
-                    ChessPosition kingPosition = this.getKingPosition();
+                    ChessPosition kingPosition = this.getKingPosition(teamColor);
                     for (ChessMove move : moves){
-                        if (move.getEndPosition() == kingPosition){
+                        if (move.getEndPosition().getColumn() == kingPosition.getColumn() && move.getEndPosition().getRow() == kingPosition.getRow()){
                             return true;
                         }
                     }
@@ -151,7 +151,6 @@ public class ChessGame {
      */
     public void setBoard(ChessBoard board) {
         this.board = board;
-        this.board.resetBoard();
     }
 
     /**
@@ -206,13 +205,13 @@ public class ChessGame {
      *
      * @return the king
      */
-    private ChessPosition getKingPosition(){
+    private ChessPosition getKingPosition(TeamColor teamColor){
         //cycle through every square on the board
         for (int i=1; i<9; i++){
             for (int j=1; j<9; j++){
                 ChessPiece piece = this.board.getPiece(new ChessPosition(i, j));
                 if (piece != null){
-                    if (piece.getPieceType() == ChessPiece.PieceType.KING) return new ChessPosition(i, j);
+                    if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor) return new ChessPosition(i, j);
                 }
             }
         }
