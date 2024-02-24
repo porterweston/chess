@@ -81,7 +81,15 @@ public class ChessGame {
         if (!validMoves.contains(move)){
             throw new InvalidMoveException("Invalid move!");
         }
+        //do the move
         this.simulateMove(move);
+        //switch the turn
+        if (this.getTeamTurn() == TeamColor.WHITE) {
+            this.setTeamTurn(TeamColor.BLACK);
+        }
+        else {
+            this.setTeamTurn(TeamColor.WHITE);
+        }
     }
 
 
@@ -92,6 +100,8 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+        ChessPosition kingPosition = this.getKingPosition(teamColor);
+        if (kingPosition == null) return false;
         //cycle through every square on the board
         for (int i=1; i<9; i++){
             for (int j=1; j<9; j++){
@@ -100,7 +110,6 @@ public class ChessGame {
                 if (piece != null && piece.getTeamColor() != teamColor){
                     //get all moves of the piece on this square
                     Collection<ChessMove> moves = piece.pieceMoves(this.board, new ChessPosition(i, j));
-                    ChessPosition kingPosition = this.getKingPosition(teamColor);
                     for (ChessMove move : moves){
                         if (move.getEndPosition().getColumn() == kingPosition.getColumn() && move.getEndPosition().getRow() == kingPosition.getRow()){
                             return true;
@@ -119,7 +128,29 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        boolean isInCheckmate = true;
+        if (!this.isInCheck(teamColor)) return false;
+        //cycle through every piece on the board that belongs to your team
+        for (int i=1; i<9; i++){
+            for (int j=1; j<9; j++){
+                //simulate every valid move that piece can make, and see if it results in this team no longer being in check
+                ChessPiece piece = this.board.getPiece(new ChessPosition(i, j));
+                if (piece != null && piece.getTeamColor() == teamColor){
+                    var validMoves = this.validMoves(new ChessPosition(i, j));
+                    for (ChessMove move : validMoves){
+                        ChessPiece otherPiece = this.board.getPiece(move.getEndPosition());
+                        this.simulateMove(move);
+                        if (!this.isInCheck(teamColor)) isInCheckmate = false;
+                        //reset the move
+                        this.board.addPiece(move.getStartPosition(), piece);
+                        this.board.addPiece(move.getEndPosition(), otherPiece);
+                        //return false if check was escaped
+                        if (!isInCheckmate) return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -130,18 +161,17 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        boolean stalemate = false;
         //cycle through every square on the board
         for (int i=1; i<9; i++){
             for (int j=1; j<9; j++){
                 if (this.board.getPiece(new ChessPosition(i, j)) != null){
                     //get all valid moves of the piece on this square
                     Collection<ChessMove> validMoves = this.validMoves(new ChessPosition(i, j));
-                    stalemate = validMoves.isEmpty();
+                    if (!validMoves.isEmpty()) return false;
                 }
             }
         }
-        return stalemate;
+        return true;
     }
 
     /**
