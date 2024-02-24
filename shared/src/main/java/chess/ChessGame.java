@@ -78,7 +78,7 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         //check that the move is valid
         Collection<ChessMove> validMoves = this.validMoves(move.getStartPosition());
-        if (!validMoves.contains(move)){
+        if (!validMoves.contains(move) || this.getTeamTurn() != this.board.getPiece(move.getStartPosition()).getTeamColor()){
             throw new InvalidMoveException("Invalid move!");
         }
         //do the move
@@ -91,7 +91,6 @@ public class ChessGame {
             this.setTeamTurn(TeamColor.WHITE);
         }
     }
-
 
     /**
      * Determines if the given team is in check
@@ -164,14 +163,15 @@ public class ChessGame {
         //cycle through every square on the board
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
-                if (this.board.getPiece(new ChessPosition(i, j)) != null) {
+                ChessPiece piece = this.board.getPiece(new ChessPosition(i, j));
+                if (piece != null && piece.getTeamColor() == teamColor) {
                     //get all valid moves of the piece on this square
                     Collection<ChessMove> validMoves = this.validMoves(new ChessPosition(i, j));
                     if (!validMoves.isEmpty()) return false;
                 }
             }
         }
-        return this.getTeamTurn() == teamColor;
+        return true;
     }
 
     /**
@@ -206,7 +206,7 @@ public class ChessGame {
         //make the move
         this.simulateMove(move);
         //check if the king was left in check or if it's their turn
-        boolean isValid = !this.isInCheck(this.getTeamTurn()) && this.getTeamTurn() == piece.getTeamColor();
+        boolean isValid = !this.isInCheck(piece.getTeamColor());
         //set the board back to its position before the move was made
         this.board.addPiece(move.getStartPosition(), piece);
         this.board.addPiece(move.getEndPosition(), otherPiece);
