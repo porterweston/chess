@@ -162,16 +162,16 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         //cycle through every square on the board
-        for (int i=1; i<9; i++){
-            for (int j=1; j<9; j++){
-                if (this.board.getPiece(new ChessPosition(i, j)) != null){
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                if (this.board.getPiece(new ChessPosition(i, j)) != null) {
                     //get all valid moves of the piece on this square
                     Collection<ChessMove> validMoves = this.validMoves(new ChessPosition(i, j));
                     if (!validMoves.isEmpty()) return false;
                 }
             }
         }
-        return true;
+        return this.getTeamTurn() == teamColor;
     }
 
     /**
