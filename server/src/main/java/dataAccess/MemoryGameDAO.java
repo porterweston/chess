@@ -1,8 +1,20 @@
 package dataAccess;
 
 import model.GameData;
+import java.util.ArrayList;
 
 public class MemoryGameDAO implements GameDAO{
+    //Singleton pattern
+    private static MemoryGameDAO gameDAO = new MemoryGameDAO();
+    private MemoryGameDAO(){}
+    public static MemoryGameDAO getInstance() {
+        return gameDAO;
+    }
+
+    //data
+    private ArrayList<GameData> games = new ArrayList<GameData>();
+
+    //methods
     @Override
     public GameData getGame(int gameID){
         return null;
@@ -21,6 +33,6 @@ public class MemoryGameDAO implements GameDAO{
     }
     @Override
     public void clearGames(){
-
+        this.games.clear();
     }
 }
