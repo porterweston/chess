@@ -29,4 +29,8 @@ public class MemoryUserDAO implements UserDAO{
     public void clearUsers(){
         this.users.clear();
     }
+
+    public ArrayList<UserData> getAllUsers(){
+        return this.users;
+    }
 }

@@ -35,4 +35,8 @@ public class MemoryGameDAO implements GameDAO{
     public void clearGames(){
         this.games.clear();
     }
+
+    public ArrayList<GameData> getAllGames(){
+        return this.games;
+    }
 }
