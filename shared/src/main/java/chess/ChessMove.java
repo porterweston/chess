@@ -45,6 +45,8 @@ public class ChessMove {
         return this.promotionPiece;
     }
 
+    public void setPromotionPiece(ChessPiece.PieceType piece) { this.promotionPiece = piece; }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
