@@ -52,7 +52,33 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        //determine which calculator to use, and return the moves using that calculator
+        return switch (this.type) {
+            case PieceType.PAWN -> {
+                PawnMovesCalculator pawnCalc = new PawnMovesCalculator();
+                yield pawnCalc.pieceMoves(board, myPosition);
+            }
+            case PieceType.KNIGHT -> {
+                KnightMovesCalculator knightCalc = new KnightMovesCalculator();
+                yield knightCalc.pieceMoves(board, myPosition);
+            }
+            case PieceType.BISHOP -> {
+                BishopMovesCalculator bishopCalc = new BishopMovesCalculator();
+                yield bishopCalc.pieceMoves(board, myPosition);
+            }
+            case PieceType.ROOK -> {
+                RookMovesCalculator rookCalc = new RookMovesCalculator();
+                yield rookCalc.pieceMoves(board, myPosition);
+            }
+            case PieceType.QUEEN -> {
+                QueenMovesCalculator queenCalc = new QueenMovesCalculator();
+                yield queenCalc.pieceMoves(board, myPosition);
+            }
+            case PieceType.KING -> {
+                KingMovesCalculator kingCalc = new KingMovesCalculator();
+                yield kingCalc.pieceMoves(board, myPosition);
+            }
+        };
     }
 
     @Override
