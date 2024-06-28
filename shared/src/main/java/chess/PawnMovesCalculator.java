@@ -38,6 +38,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
 
         //capture left
         ChessMove captureLeft = new ChessMove(position, new ChessPosition(position.getRow()+dir, position.getColumn()-1), null);
+        //check if move is in bounds
         if (captureLeft.getEndPosition().isInBounds()) {
             if (board.getPiece(captureLeft.getEndPosition()) != null && color != board.getPiece(captureLeft.getEndPosition()).getTeamColor()) {
                 if (promotion(captureLeft.getEndPosition(), color)) {
@@ -53,6 +54,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
 
         //capture right
         ChessMove captureRight = new ChessMove(position, new ChessPosition(position.getRow()+dir, position.getColumn()+1), null);
+        //check if move is in bounds
         if (captureRight.getEndPosition().isInBounds()) {
             if (board.getPiece(captureRight.getEndPosition()) != null && color != board.getPiece(captureRight.getEndPosition()).getTeamColor()) {
                 if (promotion(captureRight.getEndPosition(), color)) {
