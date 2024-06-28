@@ -33,6 +33,10 @@ public class ChessPosition {
         return this.col;
     }
 
+    public void setRow(int row) { this.row = row; }
+
+    public void setCol(int col) { this.col = col; }
+
     //returns if this chess position is within the bounds of the board
     public boolean isInBounds() {
         if (this.row > 8 || this.row < 1 || this.col > 8 || this.col < 1) {
@@ -52,5 +56,10 @@ public class ChessPosition {
     @Override
     public int hashCode() {
         return Objects.hash(row, col);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%d, %d", this.row, this.col);
     }
 }

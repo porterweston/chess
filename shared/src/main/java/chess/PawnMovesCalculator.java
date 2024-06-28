@@ -38,27 +38,31 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
 
         //capture left
         ChessMove captureLeft = new ChessMove(position, new ChessPosition(position.getRow()+dir, position.getColumn()-1), null);
-        if (board.getPiece(captureLeft.getEndPosition()) != null && color != board.getPiece(captureLeft.getEndPosition()).getTeamColor()){
-            if (promotion(captureLeft.getEndPosition(), color)){
-                moves.add(new ChessMove(position, captureLeft.getEndPosition(), ChessPiece.PieceType.KNIGHT));
-                moves.add(new ChessMove(position, captureLeft.getEndPosition(), ChessPiece.PieceType.BISHOP));
-                moves.add(new ChessMove(position, captureLeft.getEndPosition(), ChessPiece.PieceType.ROOK));
-                moves.add(new ChessMove(position, captureLeft.getEndPosition(), ChessPiece.PieceType.QUEEN));
-            } else {
-                moves.add(captureLeft);
+        if (captureLeft.getEndPosition().isInBounds()) {
+            if (board.getPiece(captureLeft.getEndPosition()) != null && color != board.getPiece(captureLeft.getEndPosition()).getTeamColor()) {
+                if (promotion(captureLeft.getEndPosition(), color)) {
+                    moves.add(new ChessMove(position, captureLeft.getEndPosition(), ChessPiece.PieceType.KNIGHT));
+                    moves.add(new ChessMove(position, captureLeft.getEndPosition(), ChessPiece.PieceType.BISHOP));
+                    moves.add(new ChessMove(position, captureLeft.getEndPosition(), ChessPiece.PieceType.ROOK));
+                    moves.add(new ChessMove(position, captureLeft.getEndPosition(), ChessPiece.PieceType.QUEEN));
+                } else {
+                    moves.add(captureLeft);
+                }
             }
         }
 
         //capture right
         ChessMove captureRight = new ChessMove(position, new ChessPosition(position.getRow()+dir, position.getColumn()+1), null);
-        if (board.getPiece(captureRight.getEndPosition()) != null && color != board.getPiece(captureRight.getEndPosition()).getTeamColor()){
-            if (promotion(captureRight.getEndPosition(), color)){
-                moves.add(new ChessMove(position, captureRight.getEndPosition(), ChessPiece.PieceType.KNIGHT));
-                moves.add(new ChessMove(position, captureRight.getEndPosition(), ChessPiece.PieceType.BISHOP));
-                moves.add(new ChessMove(position, captureRight.getEndPosition(), ChessPiece.PieceType.ROOK));
-                moves.add(new ChessMove(position, captureRight.getEndPosition(), ChessPiece.PieceType.QUEEN));
-            } else {
-                moves.add(captureRight);
+        if (captureRight.getEndPosition().isInBounds()) {
+            if (board.getPiece(captureRight.getEndPosition()) != null && color != board.getPiece(captureRight.getEndPosition()).getTeamColor()) {
+                if (promotion(captureRight.getEndPosition(), color)) {
+                    moves.add(new ChessMove(position, captureRight.getEndPosition(), ChessPiece.PieceType.KNIGHT));
+                    moves.add(new ChessMove(position, captureRight.getEndPosition(), ChessPiece.PieceType.BISHOP));
+                    moves.add(new ChessMove(position, captureRight.getEndPosition(), ChessPiece.PieceType.ROOK));
+                    moves.add(new ChessMove(position, captureRight.getEndPosition(), ChessPiece.PieceType.QUEEN));
+                } else {
+                    moves.add(captureRight);
+                }
             }
         }
 
