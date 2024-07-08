@@ -12,7 +12,10 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor teamTurn;
+
     public ChessGame() {
+        this.board = new ChessBoard();
+        this.board.resetBoard();
         this.setTeamTurn(TeamColor.WHITE);
     }
 
@@ -58,7 +61,21 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        //check to see if this move is a valid move
+        Collection<ChessMove> validMoves = this.validMoves(move.getStartPosition());
+        for (ChessMove m : validMoves) {
+            if (!m.equals(move)){
+                throw new InvalidMoveException("Invalid move");
+            }
+        }
+
+        //move the piece
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        board.addPiece(move.getStartPosition(), null);
+        board.addPiece(move.getEndPosition(), piece);
+
+        //change the turn
+        this.finishTurn();
     }
 
     /**
@@ -108,5 +125,13 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return this.board;
+    }
+
+    /**
+     * Switches the current team turn
+     */
+    private void finishTurn() {
+        if (this.teamTurn == TeamColor.WHITE) this.setTeamTurn(TeamColor.BLACK);
+        if (this.teamTurn == TeamColor.BLACK) this.setTeamTurn(TeamColor.WHITE);
     }
 }
