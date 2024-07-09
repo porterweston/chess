@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -71,11 +72,18 @@ public class ChessGame {
 
         //move the piece
         ChessPiece piece = board.getPiece(move.getStartPosition());
+        ChessPiece newPiece = null;
+        if (move.getPromotionPiece() != null) {
+            newPiece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+        }
+        else {
+            newPiece =  new ChessPiece(piece.getTeamColor(), piece.getPieceType());
+        }
         board.addPiece(move.getStartPosition(), null);
-        board.addPiece(move.getEndPosition(), piece);
+        board.addPiece(move.getEndPosition(), newPiece);
 
         //change the turn
-        this.finishTurn();
+        this.setTeamTurn(this.swapTurn(this.teamTurn));
     }
 
     /**
@@ -85,7 +93,19 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        Map<ChessPiece, ChessPosition> opposingPieces = this.board.getPieces(this.swapTurn(teamColor));
+        ChessPosition kingPos = this.board.findKing(teamColor);
+        //loop through every piece of the opposing team
+        for (ChessPiece piece : opposingPieces.keySet()) {
+            Collection<ChessMove> moves = piece.pieceMoves(this.board, opposingPieces.get(piece));
+            //loop through every move of the current piece
+            for (ChessMove move : moves) {
+                if (move.getEndPosition().equals(kingPos)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -128,10 +148,11 @@ public class ChessGame {
     }
 
     /**
-     * Switches the current team turn
+     * Returns the opposite of a given team's color
      */
-    private void finishTurn() {
-        if (this.teamTurn == TeamColor.WHITE) this.setTeamTurn(TeamColor.BLACK);
-        if (this.teamTurn == TeamColor.BLACK) this.setTeamTurn(TeamColor.WHITE);
+    private TeamColor swapTurn(TeamColor teamTurn) {
+        if (teamTurn == TeamColor.WHITE) return TeamColor.BLACK;
+        if (teamTurn == TeamColor.BLACK) return TeamColor.WHITE;
+        return null;
     }
 }

@@ -1,6 +1,8 @@
 package chess;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -35,6 +37,50 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return this.board[position.getRow() - 1][position.getColumn() - 1];
+    }
+
+    /**
+     * Gets a collection of all pieces on the board of a given team, and where they're located on the board
+     *
+     * @param teamColor The team the pieces belong to
+     * @return a dictionary where the key is a ChessPiece on the board belonging to the given team,
+     * and the value is a ChessPosition where they're located on the board
+     */
+    public Map<ChessPiece, ChessPosition> getPieces (ChessGame.TeamColor teamColor) {
+        Map<ChessPiece, ChessPosition> pieces = new HashMap<ChessPiece, ChessPosition>();
+
+        //loop through every square on the board
+        for (int i=0; i<8; i++) {
+            for (int j=0; j<8; j++) {
+                ChessPosition curPos = new ChessPosition(i+1, j+1);
+                ChessPiece curPiece = this.getPiece(curPos);
+                if (curPiece != null && curPiece.getTeamColor() == teamColor) {
+                    pieces.put(curPiece, curPos);
+                }
+            }
+        }
+
+        return pieces;
+    }
+
+    /**
+     * Finds the king of a given team color
+     *
+     * @param teamColor The team of the king to find
+     * @return a ChessPosition of where the king is, or null if the king was not found
+     */
+    public ChessPosition findKing(ChessGame.TeamColor teamColor) {
+        for (int i=0; i<8; i++) {
+            for (int j=0; j<8; j++) {
+                ChessPosition curPos = new ChessPosition(i+1, j+1);
+                if (this.getPiece(curPos) != null &&
+                        this.getPiece(curPos).getPieceType() == ChessPiece.PieceType.KING &&
+                        this.getPiece(curPos).getTeamColor() == teamColor) {
+                    return curPos;
+                }
+            }
+        }
+        return null;
     }
 
     /**
