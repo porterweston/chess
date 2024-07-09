@@ -123,7 +123,8 @@ public class ChessGame {
             //loop through every move of the current piece
             Collection<ChessMove> moves = piece.pieceMoves(this.board, myPieces.get(piece));
             for (ChessMove move : moves) {
-
+                //simulate the move
+                ChessBoard boardSim = this.board;
             }
         }
 

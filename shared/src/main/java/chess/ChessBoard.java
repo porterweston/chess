@@ -130,6 +130,22 @@ public class ChessBoard {
         this.addPiece(new ChessPosition(7, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
     }
 
+    /**
+     * Makes an identical copy of this board
+     *
+     * @return a copy of this board
+     */
+    public ChessBoard copy() {
+        ChessBoard copyBoard = new ChessBoard();
+        for (int i=0; i<8; i++) {
+            for (int j=0; j<8; j++) {
+                ChessPosition curPos = new ChessPosition(i+1, j+1);
+                copyBoard.addPiece(curPos, this.getPiece(curPos));
+            }
+        }
+        return copyBoard;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
