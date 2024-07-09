@@ -172,7 +172,15 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        Map<ChessPosition, ChessPiece> myPieces = this.board.getPieces(teamColor);
+        //loop through every position of each of my pieces
+        for (ChessPosition position : myPieces.keySet()) {
+            Collection<ChessMove> validMoves = this.validMoves(position);
+            if (validMoves != null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
