@@ -70,6 +70,18 @@ public class ChessGame {
             }
         }
 
+        //make the move
+        this.movePiece(move, this.board);
+
+        //change the turn
+        this.setTeamTurn(this.swapTurn(this.teamTurn));
+    }
+
+    /**
+     * Moves a chess piece on a given board
+     * @param move The move to perform
+     */
+    private void movePiece(ChessMove move, ChessBoard board) {
         //move the piece
         ChessPiece piece = board.getPiece(move.getStartPosition());
         ChessPiece newPiece = null;
@@ -81,9 +93,6 @@ public class ChessGame {
         }
         board.addPiece(move.getStartPosition(), null);
         board.addPiece(move.getEndPosition(), newPiece);
-
-        //change the turn
-        this.setTeamTurn(this.swapTurn(this.teamTurn));
     }
 
     /**
@@ -93,11 +102,21 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        Map<ChessPiece, ChessPosition> opposingPieces = this.board.getPieces(this.swapTurn(teamColor));
-        ChessPosition kingPos = this.board.findKing(teamColor);
+        return this.boardInCheck(teamColor, this.board);
+    }
+
+    /**
+     * Returns if a given team is in check on a given board
+     * @param teamColor The team to see if they're in check
+     * @param board The board in which to check
+     * @return if the given team is in check on the given board
+     */
+    private boolean boardInCheck(TeamColor teamColor, ChessBoard board) {
+        Map<ChessPiece, ChessPosition> opposingPieces = board.getPieces(this.swapTurn(teamColor));
+        ChessPosition kingPos = board.findKing(teamColor);
         //loop through every piece of the opposing team
         for (ChessPiece piece : opposingPieces.keySet()) {
-            Collection<ChessMove> moves = piece.pieceMoves(this.board, opposingPieces.get(piece));
+            Collection<ChessMove> moves = piece.pieceMoves(board, opposingPieces.get(piece));
             //loop through every move of the current piece
             for (ChessMove move : moves) {
                 if (move.getEndPosition().equals(kingPos)) {
@@ -124,11 +143,12 @@ public class ChessGame {
             Collection<ChessMove> moves = piece.pieceMoves(this.board, myPieces.get(piece));
             for (ChessMove move : moves) {
                 //simulate the move
-                ChessBoard boardSim = this.board;
+                ChessBoard boardSim = this.board.copy();
+                this.movePiece(move, boardSim);
+                if (!this.boardInCheck(teamColor, boardSim)) return false;
             }
         }
-
-        return false;
+        return true;
     }
 
     /**
