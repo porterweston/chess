@@ -112,12 +112,12 @@ public class ChessGame {
      * @return if the given team is in check on the given board
      */
     private boolean boardInCheck(TeamColor teamColor, ChessBoard board) {
-        Map<ChessPiece, ChessPosition> opposingPieces = board.getPieces(this.swapTurn(teamColor));
+        Map<ChessPosition, ChessPiece> opposingPieces = board.getPieces(this.swapTurn(teamColor));
         ChessPosition kingPos = board.findKing(teamColor);
-        //loop through every piece of the opposing team
-        for (ChessPiece piece : opposingPieces.keySet()) {
-            Collection<ChessMove> moves = piece.pieceMoves(board, opposingPieces.get(piece));
-            //loop through every move of the current piece
+        //loop through every piece's position of the opposing team
+        for (ChessPosition position : opposingPieces.keySet()) {
+            Collection<ChessMove> moves = board.getPiece(position).pieceMoves(board, position);
+            //loop through every move of the piece at the current position
             for (ChessMove move : moves) {
                 if (move.getEndPosition().equals(kingPos)) {
                     return true;
@@ -134,13 +134,13 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        Map<ChessPiece, ChessPosition> myPieces = this.board.getPieces(teamColor);
+        Map<ChessPosition, ChessPiece> myPieces = this.board.getPieces(teamColor);
         ChessPosition kingPos = this.board.findKing(teamColor);
         if (!this.isInCheck(teamColor)) return false;
-        //loop through every piece of my team
-        for (ChessPiece piece : myPieces.keySet()) {
-            //loop through every move of the current piece
-            Collection<ChessMove> moves = piece.pieceMoves(this.board, myPieces.get(piece));
+        //loop through every piece's position of my team
+        for (ChessPosition position : myPieces.keySet()) {
+            //loop through every move of the piece at the current position
+            Collection<ChessMove> moves = this.board.getPiece(position).pieceMoves(this.board, position);
             for (ChessMove move : moves) {
                 //simulate the move
                 ChessBoard boardSim = this.board.copy();

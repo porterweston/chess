@@ -43,11 +43,11 @@ public class ChessBoard {
      * Gets a collection of all pieces on the board of a given team, and where they're located on the board
      *
      * @param teamColor The team the pieces belong to
-     * @return a dictionary where the key is a ChessPiece on the board belonging to the given team,
-     * and the value is a ChessPosition where they're located on the board
+     * @return a dictionary where the value is a ChessPiece on the board belonging to the given team,
+     * and the key is a ChessPosition where they're located on the board
      */
-    public Map<ChessPiece, ChessPosition> getPieces (ChessGame.TeamColor teamColor) {
-        Map<ChessPiece, ChessPosition> pieces = new HashMap<ChessPiece, ChessPosition>();
+    public Map<ChessPosition, ChessPiece> getPieces (ChessGame.TeamColor teamColor) {
+        Map<ChessPosition, ChessPiece> pieces = new HashMap<ChessPosition, ChessPiece>();
 
         //loop through every square on the board
         for (int i=0; i<8; i++) {
@@ -55,7 +55,7 @@ public class ChessBoard {
                 ChessPosition curPos = new ChessPosition(i+1, j+1);
                 ChessPiece curPiece = this.getPiece(curPos);
                 if (curPiece != null && curPiece.getTeamColor() == teamColor) {
-                    pieces.put(curPiece, curPos);
+                    pieces.put(curPos, curPiece);
                 }
             }
         }
