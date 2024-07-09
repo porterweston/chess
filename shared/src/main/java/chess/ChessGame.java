@@ -178,6 +178,7 @@ public class ChessGame {
         Map<ChessPosition, ChessPiece> myPieces = this.board.getPieces(teamColor);
         //loop through every position of each of my pieces
         for (ChessPosition position : myPieces.keySet()) {
+            //generate all valid moves for the piece at the current position
             Collection<ChessMove> validMoves = this.validMoves(position);
             if (!validMoves.isEmpty()) {
                 return false;
