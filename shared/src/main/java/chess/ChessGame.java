@@ -115,7 +115,19 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        Map<ChessPiece, ChessPosition> myPieces = this.board.getPieces(teamColor);
+        ChessPosition kingPos = this.board.findKing(teamColor);
+        if (!this.isInCheck(teamColor)) return false;
+        //loop through every piece of my team
+        for (ChessPiece piece : myPieces.keySet()) {
+            //loop through every move of the current piece
+            Collection<ChessMove> moves = piece.pieceMoves(this.board, myPieces.get(piece));
+            for (ChessMove move : moves) {
+
+            }
+        }
+
+        return false;
     }
 
     /**
