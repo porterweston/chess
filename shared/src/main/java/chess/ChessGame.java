@@ -75,12 +75,14 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if (this.board.getPiece(move.getStartPosition()) == null ||
+                this.board.getPiece(move.getStartPosition()).getTeamColor() != this.teamTurn ) {
+            throw new InvalidMoveException("Invalid move");
+        }
         //check to see if this move is a valid move
         Collection<ChessMove> validMoves = this.validMoves(move.getStartPosition());
-        for (ChessMove m : validMoves) {
-            if (!m.equals(move)){
-                throw new InvalidMoveException("Invalid move");
-            }
+        if (!validMoves.contains(move)) {
+            throw new InvalidMoveException("Invalid move");
         }
 
         //make the move
@@ -172,11 +174,12 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        if (this.isInCheckmate(teamColor)) return false;
         Map<ChessPosition, ChessPiece> myPieces = this.board.getPieces(teamColor);
         //loop through every position of each of my pieces
         for (ChessPosition position : myPieces.keySet()) {
             Collection<ChessMove> validMoves = this.validMoves(position);
-            if (validMoves != null) {
+            if (!validMoves.isEmpty()) {
                 return false;
             }
         }
