@@ -4,6 +4,7 @@ import model.AuthData;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO{
 
@@ -20,13 +21,15 @@ public class MemoryAuthDAO implements AuthDAO{
     }
 
     @Override
-    public void createAuth(AuthData authData) throws DataAccessException {
-        if (auths.contains(authData)) {
-            throw new DataAccessException("Authentication already exists");
+    public String createAuth(String username) throws DataAccessException {
+        AuthData newAuth = new AuthData(UUID.randomUUID().toString(), username);
+        for (AuthData auth : auths) {
+            if (auth.username().equals(username)) {
+                throw new DataAccessException("User already authenticated");
+            }
         }
-        else {
-            auths.add(authData);
-        }
+        auths.add(newAuth);
+        return newAuth.authToken();
     }
 
     @Override
