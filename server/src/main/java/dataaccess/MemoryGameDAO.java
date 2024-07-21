@@ -1,9 +1,11 @@
 package dataaccess;
 
 import model.*;
+import chess.*;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Random;
 
 public class MemoryGameDAO implements GameDAO{
 
@@ -20,13 +22,18 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public void createGame(GameData gameData) throws DataAccessException {
-        if (games.contains(gameData)) {
-            throw new DataAccessException("Game already exists");
+    public int createGame(String gameName) {
+        Random r = new Random();
+        int gameID = r.nextInt(1, Integer.MAX_VALUE);
+        //ensure a game with that ID doesn't exist
+        for (GameData game : games) {
+            if (game.gameID() == gameID) {
+                //if it does, try generating a game again
+                return createGame(gameName);
+            }
         }
-        else {
-            games.add(gameData);
-        }
+        games.add(new GameData(gameID, null, null, gameName, new ChessGame()));
+        return gameID;
     }
 
     @Override

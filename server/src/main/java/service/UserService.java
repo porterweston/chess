@@ -3,8 +3,6 @@ package service;
 import model.*;
 import dataaccess.*;
 
-import javax.xml.crypto.Data;
-
 public class UserService {
 
     private MemoryAuthDAO authDAO = new MemoryAuthDAO();

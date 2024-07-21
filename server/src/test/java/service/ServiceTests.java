@@ -2,6 +2,7 @@ package service;
 import dataaccess.MemoryGameDAO;
 import model.*;
 import dataaccess.*;
+import chess.*;
 
 import org.junit.jupiter.api.*;
 import java.util.Collection;
@@ -144,6 +145,85 @@ public class ServiceTests {
         //logout non-existing user
         try {
             userService.logout(new LogoutRequest("12345"));
+        }
+        catch (ErrorException exception) {
+            Assertions.assertEquals(401, exception.errorCode);
+        }
+    }
+
+    @Test
+    public void ListGamesTestPositive() {
+        clearDatabase();
+
+        try {
+            //register a new user
+            RegisterResult registerResult = userService.register(new RegisterRequest("JohnDoe", "12345", "johndoe@email.com"));
+
+            try {
+                //create a new game
+                CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(registerResult.authToken(), "John's Game"));
+
+                try {
+                    //list games
+                    ListGamesResult listGamesResult = gameService.listGames(new ListGamesRequest(registerResult.authToken()));
+                    Assertions.assertEquals(new HashSet<GameData>(){{add(new GameData(createGameResult.gameID(), null, null, "John's Game", new ChessGame()));}}, listGamesResult.games());
+                }
+                catch (ErrorException exception) {
+                    return;
+                }
+            }
+            catch (ErrorException exception) {
+                return;
+            }
+        }
+        catch (ErrorException exception) {
+            return;
+        }
+    }
+
+    @Test
+    public void ListGamesTestNegative() {
+        clearDatabase();
+
+        try {
+            gameService.listGames(new ListGamesRequest("12345"));
+        }
+        catch (ErrorException exception) {
+            Assertions.assertEquals(401, exception.errorCode);
+        }
+        //try listing games without being authenticated
+    }
+
+    @Test
+    public void CreateGameTestPositive() {
+        clearDatabase();
+
+        try {
+            //register a new user
+            RegisterResult registerResult = userService.register(new RegisterRequest("JohnDoe", "12345", "johndoe@email.com"));
+
+            try {
+                //create a new game
+                CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(registerResult.authToken(), "John's Game"));
+
+                Assertions.assertEquals(new HashSet<GameData>(){{add(new GameData(createGameResult.gameID(), null, null, "John's Game", new ChessGame()));}}, gameDAO.getGamesDatabase());
+            }
+            catch (ErrorException exception) {
+                return;
+            }
+        }
+        catch (ErrorException exception) {
+            return;
+        }
+    }
+
+    @Test
+    public void CreateGameTestNegative() {
+        clearDatabase();
+
+        //try creating a game without being authorized
+        try {
+            gameService.createGame(new CreateGameRequest("12345", "John's Game"));
         }
         catch (ErrorException exception) {
             Assertions.assertEquals(401, exception.errorCode);
