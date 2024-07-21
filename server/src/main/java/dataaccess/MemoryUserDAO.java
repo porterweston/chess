@@ -10,27 +10,32 @@ public class MemoryUserDAO implements UserDAO{
     private static Collection<UserData> users = new HashSet<UserData>();
 
     @Override
-    public UserData getUser(String username) throws DataAccessException {
+    public UserData getUser(String username) {
         for (UserData user : users) {
             if (user.username().equals(username)) {
                 return user;
             }
         }
-        throw new DataAccessException("User does not exist");
+        return null;
     }
 
     @Override
     public void createUser(UserData userData) throws DataAccessException {
-        if (users.contains(userData)) {
-            throw new DataAccessException("User already exists");
+        for (UserData user : users) {
+            if (user.username().equals(userData.username()) && user.email().equals(userData.email())) {
+                throw new DataAccessException("User already exists");
+            }
         }
-        else {
-            users.add(userData);
-        }
+        users.add(userData);
     }
 
     @Override
     public void deleteUsers() {
         users.clear();
+    }
+
+    //returns what's in the database for testing purposes
+    public Collection<UserData> getUsersDatabase() {
+        return users;
     }
 }

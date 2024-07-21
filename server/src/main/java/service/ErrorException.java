@@ -5,7 +5,7 @@ public class ErrorException extends Exception{
     public int errorCode;
 
     public ErrorException(int errorCode, String message) {
-        super(String.format("%s %s", "Error: ", message));
-        errorCode = this.errorCode;
+        super(String.format("%s %s", "Error:", message));
+        this.errorCode = errorCode;
     }
 }

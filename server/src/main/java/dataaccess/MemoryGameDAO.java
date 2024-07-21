@@ -50,4 +50,9 @@ public class MemoryGameDAO implements GameDAO{
     public void deleteGames() {
         games.clear();
     }
+
+    //returns what's in the database for testing purposes
+    public Collection<GameData> getGamesDatabase() {
+        return games;
+    }
 }

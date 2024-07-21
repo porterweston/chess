@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
+import model.GameData;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -46,5 +47,10 @@ public class MemoryAuthDAO implements AuthDAO{
     @Override
     public void deleteAuths() {
         auths.clear();
+    }
+
+    //returns what's in the database for testing purposes
+    public Collection<AuthData> getAuthsDatabase() {
+        return auths;
     }
 }
