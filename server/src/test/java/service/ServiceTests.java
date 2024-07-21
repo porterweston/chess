@@ -49,7 +49,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void RegisterTestNegative() {
+    public void registerTestNegative() {
         clearDatabase();
 
         try {
@@ -72,7 +72,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void LoginTestPositive() {
+    public void loginTestPositive() {
         clearDatabase();
 
         try {
@@ -103,7 +103,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void LoginTestNegative() {
+    public void loginTestNegative() {
         clearDatabase();
 
         //login a non-existing user
@@ -116,7 +116,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void LogoutTestPositive() {
+    public void logoutTestPositive() {
         clearDatabase();
 
         try {
@@ -139,7 +139,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void LogoutTestNegative() {
+    public void logoutTestNegative() {
         clearDatabase();
 
         //logout non-existing user
@@ -152,7 +152,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void ListGamesTestPositive() {
+    public void listGamesTestPositive() {
         clearDatabase();
 
         try {
@@ -182,7 +182,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void ListGamesTestNegative() {
+    public void listGamesTestNegative() {
         clearDatabase();
 
         try {
@@ -195,7 +195,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void CreateGameTestPositive() {
+    public void createGameTestPositive() {
         clearDatabase();
 
         try {
@@ -218,7 +218,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void CreateGameTestNegative() {
+    public void createGameTestNegative() {
         clearDatabase();
 
         //try creating a game without being authorized
@@ -227,6 +227,81 @@ public class ServiceTests {
         }
         catch (ErrorException exception) {
             Assertions.assertEquals(401, exception.errorCode);
+        }
+    }
+
+    @Test
+    public void joinGameTestPositive() {
+        clearDatabase();
+
+        try {
+            //register a new user
+            RegisterResult registerResult = userService.register(new RegisterRequest("JohnDoe", "12345", "johndoe@email.com"));
+
+            try {
+                //create a new game
+                CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(registerResult.authToken(), "John's Game"));
+
+                try {
+                    //join game
+                    gameService.joinGame(new JoinGameRequest(registerResult.authToken(), ChessGame.TeamColor.WHITE, createGameResult.gameID()));
+
+                    Assertions.assertEquals(new HashSet<GameData>(){{add(new GameData(createGameResult.gameID(), "JohnDoe", null, "John's Game", new ChessGame()));}}, gameDAO.getGamesDatabase());
+                }
+                catch (ErrorException exception) {
+                    return;
+                }
+            }
+            catch (ErrorException exception) {
+                return;
+            }
+        }
+        catch (ErrorException exception) {
+            return;
+        }
+    }
+
+    @Test
+    public void joinGameTestNegative() {
+        clearDatabase();
+
+        try {
+            //register a new user
+            RegisterResult registerResult = userService.register(new RegisterRequest("JohnDoe", "12345", "johndoe@email.com"));
+
+            try {
+                //create a new game
+                CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(registerResult.authToken(), "John's Game"));
+
+                try {
+                    //join game
+                    gameService.joinGame(new JoinGameRequest(registerResult.authToken(), ChessGame.TeamColor.WHITE, createGameResult.gameID()));
+
+                    try {
+                        //register another new user
+                        RegisterResult registerResult2 = userService.register(new RegisterRequest("DoeJohn", "54321", "doejohn@email.com"));
+                        try {
+                            //try joining the same game
+                            gameService.joinGame(new JoinGameRequest(registerResult2.authToken(), ChessGame.TeamColor.WHITE, createGameResult.gameID()));
+                        }
+                        catch (ErrorException exception) {
+                            Assertions.assertEquals(403, exception.errorCode);
+                        }
+                    }
+                    catch (ErrorException exception) {
+                        return;
+                    }
+                }
+                catch (ErrorException exception) {
+                    return;
+                }
+            }
+            catch (ErrorException exception) {
+                return;
+            }
+        }
+        catch (ErrorException exception) {
+            return;
         }
     }
 
