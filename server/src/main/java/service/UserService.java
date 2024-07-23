@@ -36,7 +36,7 @@ public class UserService {
             throw new ErrorException(401, "unauthorized");
         }
 
-        //make new auth
+        //authenticate user
         String authToken = authDAO.createAuth(req.username());
         return new LoginResult(req.username(), authToken);
     }
