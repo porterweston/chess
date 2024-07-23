@@ -12,6 +12,10 @@ public class UserService {
         //make new user
         try {
             UserData newUser = new UserData(req.username(), req.password(), req.email());
+            //if any fields are null, bad request
+            if (req.username() == null || req.password() == null || req.email() == null) {
+                throw new ErrorException(400, "bad request");
+            }
             userDAO.createUser(newUser);
         }
         catch (DataAccessException e) {
@@ -27,14 +31,9 @@ public class UserService {
         //get the user
         UserData user = userDAO.getUser(req.username());
 
-        //ensure user exists
-        if (user == null) {
+        //ensure user exists and passwords match
+        if (user == null || !user.password().equals(req.password())) {
             throw new ErrorException(401, "unauthorized");
-        }
-
-        //verify passwords match
-        if (!user.password().equals(req.password())) {
-            throw new ErrorException(500, "incorrect password");
         }
 
         //make new auth

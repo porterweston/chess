@@ -41,8 +41,14 @@ public class GameService {
             AuthData auth = authDAO.getAuth(req.authToken());
 
             try {
+                Integer gameID = req.gameID();
+                //if any fields in request are null, bad request
+                if (gameID == null || req.playerColor() == null || req.authToken() == null) {
+                    throw new ErrorException(400, "bad request");
+                }
+
                 //get game
-                GameData game = gameDAO.getGame(req.gameID());
+                GameData game = gameDAO.getGame(gameID);
 
                 //verify user can join game
                 if (req.playerColor() == ChessGame.TeamColor.WHITE && game.whiteUsername() != null ||
