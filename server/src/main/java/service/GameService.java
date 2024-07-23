@@ -65,6 +65,8 @@ public class GameService {
                     updatedGame = new GameData(game.gameID(), game.whiteUsername(), auth.username(), game.gameName(), game.game());
                 }
                 gameDAO.updateGame(game, updatedGame);
+
+                //return result
                 return new JoinGameResult();
             }
             catch (DataAccessException exception) {
