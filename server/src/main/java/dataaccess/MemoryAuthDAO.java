@@ -22,11 +22,12 @@ public class MemoryAuthDAO implements AuthDAO{
     }
 
     @Override
-    public String createAuth(String username) throws DataAccessException {
+    public String createAuth(String username) {
         AuthData newAuth = new AuthData(UUID.randomUUID().toString(), username);
+        //if auth already exists, remove it
         for (AuthData auth : auths) {
             if (auth.username().equals(username)) {
-                throw new DataAccessException("User already authenticated");
+                auths.remove(auth);
             }
         }
         auths.add(newAuth);

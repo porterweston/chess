@@ -35,7 +35,7 @@ public class GameService {
         }
     }
 
-    public void joinGame(JoinGameRequest req) throws ErrorException{
+    public JoinGameResult joinGame(JoinGameRequest req) throws ErrorException{
         try {
             //verify authorization
             AuthData auth = authDAO.getAuth(req.authToken());
@@ -59,6 +59,7 @@ public class GameService {
                     updatedGame = new GameData(game.gameID(), game.whiteUsername(), auth.username(), game.gameName(), game.game());
                 }
                 gameDAO.updateGame(game, updatedGame);
+                return new JoinGameResult();
             }
             catch (DataAccessException exception) {
                 throw new ErrorException(500, "game doesn't exist");

@@ -22,7 +22,7 @@ public class MemoryUserDAO implements UserDAO{
     @Override
     public void createUser(UserData userData) throws DataAccessException {
         for (UserData user : users) {
-            if (user.username().equals(userData.username()) && user.email().equals(userData.email())) {
+            if (user.username().equals(userData.username())) {
                 throw new DataAccessException("User already exists");
             }
         }

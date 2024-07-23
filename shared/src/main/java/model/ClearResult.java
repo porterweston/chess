@@ -1,4 +1,4 @@
 package model;
 
-public record ClearResult(boolean success) {
+public record ClearResult() {
 }

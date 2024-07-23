@@ -1,4 +1,4 @@
 package model;
 
-public record JoinGameResult(boolean success) {
+public record JoinGameResult() {
 }

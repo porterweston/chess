@@ -19,13 +19,8 @@ public class UserService {
             throw new ErrorException(403, "already taken");
         }
         //make new auth
-        try {
-            String authToken = authDAO.createAuth(req.username());
-            return new RegisterResult(req.username(), authToken);
-        }
-        catch (DataAccessException e) {
-            throw new ErrorException(500, "already authenticated");
-        }
+        String authToken = authDAO.createAuth(req.username());
+        return new RegisterResult(req.username(), authToken);
     }
 
     public LoginResult login(LoginRequest req) throws ErrorException{
@@ -42,25 +37,20 @@ public class UserService {
             throw new ErrorException(500, "incorrect password");
         }
 
-        //authorize the user
-        try {
-            String authToken = authDAO.createAuth(req.username());
-            return new LoginResult(req.username(), authToken);
-        }
-        catch (DataAccessException exception) {
-            throw new ErrorException(500, "user already authorized");
-        }
+        //make new auth
+        String authToken = authDAO.createAuth(req.username());
+        return new LoginResult(req.username(), authToken);
     }
 
     public LogoutResult logout(LogoutRequest req) throws ErrorException{
         try {
-            //get authorization
+            //verify authorization
             AuthData auth = authDAO.getAuth(req.authToken());
 
             //delete authorization
             authDAO.deleteAuth(auth.authToken());
 
-            return new LogoutResult(true);
+            return new LogoutResult();
         }
         catch (DataAccessException exception) {
             throw new ErrorException(401, "unauthorized");

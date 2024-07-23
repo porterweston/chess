@@ -12,6 +12,6 @@ public class ClearService {
         userDAO.deleteUsers();
         gameDAO.deleteGames();
         authDAO.deleteAuths();
-        return new ClearResult(true);
+        return new ClearResult();
     }
 }
