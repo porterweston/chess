@@ -55,7 +55,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = this.board.getPiece(startPosition);
-        if (piece == null) return null;
+        if (piece == null) {return null;}
         Collection<ChessMove> pieceMoves = this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
         Collection<ChessMove> validMoves = new ArrayList<ChessMove>();
         //iterate through all moves in piece moves
@@ -152,7 +152,7 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         Map<ChessPosition, ChessPiece> myPieces = this.board.getPieces(teamColor);
         ChessPosition kingPos = this.board.findKing(teamColor);
-        if (!this.isInCheck(teamColor)) return false;
+        if (!this.isInCheck(teamColor)) {return false;}
         //loop through every piece's position of my team
         for (ChessPosition position : myPieces.keySet()) {
             //loop through every move of the piece at the current position
@@ -161,7 +161,7 @@ public class ChessGame {
                 //simulate the move
                 ChessBoard boardSim = this.board.copy();
                 this.movePiece(move, boardSim);
-                if (!this.boardInCheck(teamColor, boardSim)) return false;
+                if (!this.boardInCheck(teamColor, boardSim)) {return false;}
             }
         }
         return true;
@@ -175,7 +175,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if (this.isInCheckmate(teamColor)) return false;
+        if (this.isInCheckmate(teamColor)) {return false;}
         Map<ChessPosition, ChessPiece> myPieces = this.board.getPieces(teamColor);
         //loop through every position of each of my pieces
         for (ChessPosition position : myPieces.keySet()) {
@@ -210,15 +210,15 @@ public class ChessGame {
      * Returns the opposite of a given team's color
      */
     private TeamColor swapTurn(TeamColor teamTurn) {
-        if (teamTurn == TeamColor.WHITE) return TeamColor.BLACK;
-        if (teamTurn == TeamColor.BLACK) return TeamColor.WHITE;
+        if (teamTurn == TeamColor.WHITE) {return TeamColor.BLACK;}
+        if (teamTurn == TeamColor.BLACK) {return TeamColor.WHITE;}
         return null;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         ChessGame chessGame = (ChessGame) o;
         return Objects.deepEquals(board, chessGame.board) && teamTurn == chessGame.teamTurn;
     }

@@ -5,7 +5,8 @@ import dataaccess.*;
 import chess.*;
 
 import org.junit.jupiter.api.*;
-import java.util.Collection;
+import reqres.*;
+
 import java.util.HashSet;
 
 public class ServiceTests {
@@ -35,11 +36,15 @@ public class ServiceTests {
 
         try {
             //register a new user
-            RegisterResult result = userService.register(new RegisterRequest("JohnDoe", "12345", "johndoe@email.com"));
+            RegisterResult result = userService.register(new RegisterRequest(
+                    "JohnDoe", "12345", "johndoe@email.com"));
 
             //ensure user was added to database
-            Assertions.assertEquals(new HashSet<UserData>(){{add(new UserData("JohnDoe", "12345", "johndoe@email.com"));}}, userDAO.getUsersDatabase());
-            Assertions.assertEquals(new HashSet<AuthData>(){{add(new AuthData(result.authToken(), "JohnDoe"));}}, authDAO.getAuthsDatabase());
+            Assertions.assertEquals(new HashSet<UserData>(){{add(new UserData(
+                    "JohnDoe", "12345", "johndoe@email.com"));}},
+                    userDAO.getUsersDatabase());
+            Assertions.assertEquals(new HashSet<AuthData>(){{add(new AuthData(
+                    result.authToken(), "JohnDoe"));}}, authDAO.getAuthsDatabase());
         }
         catch (ErrorException exception) {
             return;
@@ -54,11 +59,13 @@ public class ServiceTests {
 
         try {
             //register a new user
-            userService.register(new RegisterRequest("JohnDoe", "12345", "johndoe@email.com"));
+            userService.register(new RegisterRequest(
+                    "JohnDoe", "12345", "johndoe@email.com"));
 
             try {
                 //register another user with the same username and email
-                userService.register(new RegisterRequest("JohnDoe", "54321", "johndoe@email.com"));
+                userService.register(new RegisterRequest(
+                        "JohnDoe", "54321", "johndoe@email.com"));
             }
             catch (ErrorException exception) {
                 Assertions.assertEquals(403, exception.errorCode);
@@ -77,7 +84,8 @@ public class ServiceTests {
 
         try {
             //register a new user
-            RegisterResult registerResult = userService.register(new RegisterRequest("JohnDoe", "12345", "johndoe@email.com"));
+            RegisterResult registerResult = userService.register(new RegisterRequest(
+                    "JohnDoe", "12345", "johndoe@email.com"));
 
             try {
                 //logout user
@@ -85,9 +93,13 @@ public class ServiceTests {
 
                 //login user
                 try {
-                    LoginResult loginResult = userService.login(new LoginRequest("JohnDoe", "12345"));
-                    Assertions.assertEquals(new HashSet<UserData>(){{add(new UserData("JohnDoe", "12345", "johndoe@email.com"));}}, userDAO.getUsersDatabase());
-                    Assertions.assertEquals(new HashSet<AuthData>(){{add(new AuthData(loginResult.authToken(), "JohnDoe"));}}, authDAO.getAuthsDatabase());
+                    LoginResult loginResult = userService.login(new LoginRequest(
+                            "JohnDoe", "12345"));
+                    Assertions.assertEquals(new HashSet<UserData>(){{add(new UserData(
+                            "JohnDoe", "12345", "johndoe@email.com"));}},
+                            userDAO.getUsersDatabase());
+                    Assertions.assertEquals(new HashSet<AuthData>(){{add(new AuthData(
+                            loginResult.authToken(), "JohnDoe"));}}, authDAO.getAuthsDatabase());
                 }
                 catch (ErrorException exception) {
                     return;
@@ -121,12 +133,15 @@ public class ServiceTests {
 
         try {
             //register a new user
-            RegisterResult result = userService.register(new RegisterRequest("JohnDoe", "12345", "johndoe@email.com"));
+            RegisterResult result = userService.register(new RegisterRequest(
+                    "JohnDoe", "12345", "johndoe@email.com"));
 
             try {
                 //logout user
                 userService.logout(new LogoutRequest(result.authToken()));
-                Assertions.assertEquals(new HashSet<UserData>(){{add(new UserData("JohnDoe", "12345", "johndoe@email.com"));}}, userDAO.getUsersDatabase());
+                Assertions.assertEquals(new HashSet<UserData>(){{add(new UserData(
+                        "JohnDoe", "12345", "johndoe@email.com"));}},
+                        userDAO.getUsersDatabase());
                 Assertions.assertEquals(new HashSet<AuthData>(), authDAO.getAuthsDatabase());
             }
             catch (ErrorException exception) {
@@ -157,16 +172,21 @@ public class ServiceTests {
 
         try {
             //register a new user
-            RegisterResult registerResult = userService.register(new RegisterRequest("JohnDoe", "12345", "johndoe@email.com"));
+            RegisterResult registerResult = userService.register(new RegisterRequest(
+                    "JohnDoe", "12345", "johndoe@email.com"));
 
             try {
                 //create a new game
-                CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(registerResult.authToken(), "John's Game"));
+                CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(
+                        registerResult.authToken(), "John's Game"));
 
                 try {
                     //list games
-                    ListGamesResult listGamesResult = gameService.listGames(new ListGamesRequest(registerResult.authToken()));
-                    Assertions.assertEquals(new HashSet<GameData>(){{add(new GameData(createGameResult.gameID(), null, null, "John's Game", new ChessGame()));}}, listGamesResult.games());
+                    ListGamesResult listGamesResult = gameService.listGames(new ListGamesRequest(
+                            registerResult.authToken()));
+                    Assertions.assertEquals(new HashSet<GameData>(){{add(new GameData(
+                            createGameResult.gameID(), null, null,
+                            "John's Game", new ChessGame()));}}, listGamesResult.games());
                 }
                 catch (ErrorException exception) {
                     return;
@@ -200,13 +220,17 @@ public class ServiceTests {
 
         try {
             //register a new user
-            RegisterResult registerResult = userService.register(new RegisterRequest("JohnDoe", "12345", "johndoe@email.com"));
+            RegisterResult registerResult = userService.register(new RegisterRequest(
+                    "JohnDoe", "12345", "johndoe@email.com"));
 
             try {
                 //create a new game
-                CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(registerResult.authToken(), "John's Game"));
+                CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(
+                        registerResult.authToken(), "John's Game"));
 
-                Assertions.assertEquals(new HashSet<GameData>(){{add(new GameData(createGameResult.gameID(), null, null, "John's Game", new ChessGame()));}}, gameDAO.getGamesDatabase());
+                Assertions.assertEquals(new HashSet<GameData>(){{add(new GameData(
+                        createGameResult.gameID(), null, null,
+                        "John's Game", new ChessGame()));}}, gameDAO.getGamesDatabase());
             }
             catch (ErrorException exception) {
                 return;
@@ -236,17 +260,22 @@ public class ServiceTests {
 
         try {
             //register a new user
-            RegisterResult registerResult = userService.register(new RegisterRequest("JohnDoe", "12345", "johndoe@email.com"));
+            RegisterResult registerResult = userService.register(new RegisterRequest(
+                    "JohnDoe", "12345", "johndoe@email.com"));
 
             try {
                 //create a new game
-                CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(registerResult.authToken(), "John's Game"));
+                CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(
+                        registerResult.authToken(), "John's Game"));
 
                 try {
                     //join game
-                    gameService.joinGame(new JoinGameRequest(registerResult.authToken(), ChessGame.TeamColor.WHITE, createGameResult.gameID()));
+                    gameService.joinGame(new JoinGameRequest(
+                            registerResult.authToken(), ChessGame.TeamColor.WHITE, createGameResult.gameID()));
 
-                    Assertions.assertEquals(new HashSet<GameData>(){{add(new GameData(createGameResult.gameID(), "JohnDoe", null, "John's Game", new ChessGame()));}}, gameDAO.getGamesDatabase());
+                    Assertions.assertEquals(new HashSet<GameData>(){{add(new GameData(
+                            createGameResult.gameID(), "JohnDoe", null,
+                            "John's Game", new ChessGame()));}}, gameDAO.getGamesDatabase());
                 }
                 catch (ErrorException exception) {
                     return;
@@ -265,32 +294,22 @@ public class ServiceTests {
     public void joinGameTestNegative() {
         clearDatabase();
 
+        CreateGameResult createGameResult;
+
         try {
             //register a new user
-            RegisterResult registerResult = userService.register(new RegisterRequest("JohnDoe", "12345", "johndoe@email.com"));
+            RegisterResult registerResult = userService.register(new RegisterRequest(
+                    "JohnDoe", "12345", "johndoe@email.com"));
 
             try {
                 //create a new game
-                CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(registerResult.authToken(), "John's Game"));
+                createGameResult = gameService.createGame(new CreateGameRequest(
+                        registerResult.authToken(), "John's Game"));
 
                 try {
                     //join game
-                    gameService.joinGame(new JoinGameRequest(registerResult.authToken(), ChessGame.TeamColor.WHITE, createGameResult.gameID()));
-
-                    try {
-                        //register another new user
-                        RegisterResult registerResult2 = userService.register(new RegisterRequest("DoeJohn", "54321", "doejohn@email.com"));
-                        try {
-                            //try joining the same game
-                            gameService.joinGame(new JoinGameRequest(registerResult2.authToken(), ChessGame.TeamColor.WHITE, createGameResult.gameID()));
-                        }
-                        catch (ErrorException exception) {
-                            Assertions.assertEquals(403, exception.errorCode);
-                        }
-                    }
-                    catch (ErrorException exception) {
-                        return;
-                    }
+                    gameService.joinGame(new JoinGameRequest(
+                            registerResult.authToken(), ChessGame.TeamColor.WHITE, createGameResult.gameID()));
                 }
                 catch (ErrorException exception) {
                     return;
@@ -298,6 +317,23 @@ public class ServiceTests {
             }
             catch (ErrorException exception) {
                 return;
+            }
+        }
+        catch (ErrorException exception) {
+            return;
+        }
+
+        try {
+            //register another new user
+            RegisterResult registerResult2 = userService.register(new RegisterRequest(
+                    "DoeJohn", "54321", "doejohn@email.com"));
+            try {
+                //try joining the same game
+                gameService.joinGame(new JoinGameRequest(
+                        registerResult2.authToken(), ChessGame.TeamColor.WHITE, createGameResult.gameID()));
+            }
+            catch (ErrorException exception) {
+                Assertions.assertEquals(403, exception.errorCode);
             }
         }
         catch (ErrorException exception) {

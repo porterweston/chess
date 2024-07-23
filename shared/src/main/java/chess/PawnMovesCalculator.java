@@ -10,8 +10,8 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         ChessGame.TeamColor color = pawn.getTeamColor();
         Collection<ChessMove> moves = new ArrayList<ChessMove>();
         int dir = 0;
-        if (color == ChessGame.TeamColor.WHITE) dir = 1;
-        if (color == ChessGame.TeamColor.BLACK) dir = -1;
+        if (color == ChessGame.TeamColor.WHITE) {dir = 1;}
+        if (color == ChessGame.TeamColor.BLACK) {dir = -1;}
 
         //forward one
         ChessMove forwardOne = new ChessMove(position, new ChessPosition(position.getRow()+dir, position.getColumn()), null);

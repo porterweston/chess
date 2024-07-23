@@ -1,7 +1,8 @@
 package handler;
 
+import reqres.ListGamesRequest;
+import reqres.ListGamesResult;
 import spark.*;
-import model.*;
 import service.*;
 
 public class ListGamesHandler extends Handler{

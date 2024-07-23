@@ -1,7 +1,8 @@
 package handler;
 
+import reqres.RegisterRequest;
+import reqres.RegisterResult;
 import spark.*;
-import model.*;
 import service.*;
 
 public class RegisterHandler extends Handler{

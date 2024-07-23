@@ -1,7 +1,8 @@
 package handler;
 
+import reqres.LoginRequest;
+import reqres.LoginResult;
 import spark.*;
-import model.*;
 import service.*;
 
 public class LoginHandler extends Handler{

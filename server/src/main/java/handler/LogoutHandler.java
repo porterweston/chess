@@ -1,7 +1,8 @@
 package handler;
 
+import reqres.LogoutRequest;
+import reqres.LogoutResult;
 import spark.*;
-import model.*;
 import service.*;
 
 public class LogoutHandler extends Handler{

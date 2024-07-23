@@ -1,7 +1,8 @@
 package handler;
 
+import reqres.ClearRequest;
+import reqres.ClearResult;
 import spark.*;
-import model.*;
 import service.*;
 
 public class ClearHandler extends Handler{

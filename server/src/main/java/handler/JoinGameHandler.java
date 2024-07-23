@@ -1,9 +1,8 @@
 package handler;
 
-import chess.*;
-import com.google.gson.JsonObject;
+import reqres.JoinGameRequest;
+import reqres.JoinGameResult;
 import spark.*;
-import model.*;
 import service.*;
 
 public class JoinGameHandler extends Handler{

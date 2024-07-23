@@ -2,6 +2,7 @@ package service;
 
 import model.*;
 import dataaccess.*;
+import reqres.*;
 
 public class UserService {
 

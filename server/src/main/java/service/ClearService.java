@@ -1,6 +1,7 @@
 package service;
-import model.*;
 import dataaccess.*;
+import reqres.ClearRequest;
+import reqres.ClearResult;
 
 public class ClearService {
 

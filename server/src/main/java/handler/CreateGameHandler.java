@@ -1,9 +1,8 @@
 package handler;
 
+import reqres.*;
 import spark.*;
-import model.*;
 import service.*;
-import com.google.gson.JsonObject;
 
 public class CreateGameHandler extends Handler{
     public Object handleRequest(Request req, Response res) throws ErrorException {

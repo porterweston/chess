@@ -3,6 +3,7 @@ package service;
 import chess.ChessGame;
 import model.*;
 import dataaccess.*;
+import reqres.*;
 
 public class GameService {
 
