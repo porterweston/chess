@@ -1,5 +1,7 @@
-package dataaccess;
+package dataaccess.memory;
 
+import dataaccess.DataAccessException;
+import dataaccess.interfaces.GameDAO;
 import model.*;
 import chess.*;
 
@@ -7,7 +9,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 
-public class MemoryGameDAO implements GameDAO{
+public class MemoryGameDAO implements GameDAO {
 
     private static Collection<GameData> games = new HashSet<GameData>();
 

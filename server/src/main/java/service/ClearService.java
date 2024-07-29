@@ -1,5 +1,7 @@
 package service;
-import dataaccess.*;
+import dataaccess.memory.MemoryAuthDAO;
+import dataaccess.memory.MemoryGameDAO;
+import dataaccess.memory.MemoryUserDAO;
 import reqres.ClearRequest;
 import reqres.ClearResult;
 

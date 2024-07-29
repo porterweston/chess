@@ -1,13 +1,14 @@
-package dataaccess;
+package dataaccess.memory;
 
+import dataaccess.interfaces.AuthDAO;
+import dataaccess.DataAccessException;
 import model.AuthData;
-import model.GameData;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class MemoryAuthDAO implements AuthDAO{
+public class MemoryAuthDAO implements AuthDAO {
 
     private static Collection<AuthData> auths = new HashSet<AuthData>();
 

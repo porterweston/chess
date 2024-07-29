@@ -1,5 +1,7 @@
 package service;
 
+import dataaccess.memory.MemoryAuthDAO;
+import dataaccess.memory.MemoryUserDAO;
 import model.*;
 import dataaccess.*;
 import reqres.*;

@@ -1,6 +1,8 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.memory.MemoryAuthDAO;
+import dataaccess.memory.MemoryGameDAO;
 import model.*;
 import dataaccess.*;
 import reqres.*;
