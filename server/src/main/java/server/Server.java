@@ -1,6 +1,11 @@
 package server;
 
 import com.google.gson.JsonSyntaxException;
+import dataaccess.interfaces.*;
+import dataaccess.memory.MemoryAuthDAO;
+import dataaccess.memory.MemoryGameDAO;
+import dataaccess.memory.MemoryUserDAO;
+import org.eclipse.jetty.server.Authentication;
 import spark.*;
 import handler.*;
 import service.*;
@@ -8,35 +13,41 @@ import service.*;
 public class Server {
 
     //Handler instances
-    private RegisterHandler registerHandler;
-    private LoginHandler loginHandler;
-    private LogoutHandler logoutHandler;
-    private ListGamesHandler listGamesHandler;
-    private CreateGameHandler createGameHandler;
-    private JoinGameHandler joinGameHandler;
-    private ClearHandler clearHandler;
-    private ErrorHandler errorHandler;
+    private final RegisterHandler registerHandler;
+    private final LoginHandler loginHandler;
+    private final LogoutHandler logoutHandler;
+    private final ListGamesHandler listGamesHandler;
+    private final CreateGameHandler createGameHandler;
+    private final JoinGameHandler joinGameHandler;
+    private final ClearHandler clearHandler;
+    private final ErrorHandler errorHandler;
 
     //Service instances
-    private final GameService gameService;
-    private final UserService userService;
-    private final ClearService clearService;
+    GameService gameService = new GameService(new MemoryGameDAO(), new MemoryAuthDAO());
+    UserService userService = new UserService(new MemoryAuthDAO(), new MemoryUserDAO());
+    ClearService clearService = new ClearService(new MemoryUserDAO(), new MemoryGameDAO(), new MemoryAuthDAO());
+
+    public Server() {
+        registerHandler = new RegisterHandler(gameService, userService, clearService);
+        loginHandler = new LoginHandler(gameService, userService, clearService);
+        logoutHandler = new LogoutHandler(gameService, userService, clearService);
+        listGamesHandler = new ListGamesHandler(gameService, userService, clearService);
+        createGameHandler = new CreateGameHandler(gameService, userService, clearService);
+        joinGameHandler = new JoinGameHandler(gameService, userService, clearService);
+        clearHandler = new ClearHandler(gameService, userService, clearService);
+        errorHandler = new ErrorHandler(gameService, userService, clearService);
+    }
 
     public Server(GameService gameService, UserService userService, ClearService clearService) {
-        //initialize services
-        this.gameService = gameService;
-        this.userService = userService;
-        this.clearService = clearService;
-
         //initialize handlers
-        registerHandler = new RegisterHandler();
-        loginHandler = new LoginHandler();
-        logoutHandler = new LogoutHandler();
-        listGamesHandler = new ListGamesHandler();
-        createGameHandler = new CreateGameHandler();
-        joinGameHandler = new JoinGameHandler();
+        registerHandler = new RegisterHandler(gameService, userService, clearService);
+        loginHandler = new LoginHandler(gameService, userService, clearService);
+        logoutHandler = new LogoutHandler(gameService, userService, clearService);
+        listGamesHandler = new ListGamesHandler(gameService, userService, clearService);
+        createGameHandler = new CreateGameHandler(gameService, userService, clearService);
+        joinGameHandler = new JoinGameHandler(gameService, userService, clearService);
         clearHandler = new ClearHandler(gameService, userService, clearService);
-        errorHandler = new ErrorHandler();
+        errorHandler = new ErrorHandler(gameService, userService, clearService);
     }
 
     public int run(int desiredPort) {

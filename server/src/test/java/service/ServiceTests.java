@@ -1,7 +1,7 @@
 package service;
-import dataaccess.memory.MemoryAuthDAO;
-import dataaccess.memory.MemoryGameDAO;
-import dataaccess.memory.MemoryUserDAO;
+import dataaccess.memory.*;
+import dataaccess.mysql.*;
+import dataaccess.interfaces.*;
 import model.*;
 import chess.*;
 
@@ -18,9 +18,9 @@ public class ServiceTests {
     private MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
     //Services
-    private GameService gameService = new GameService();
-    private UserService userService = new UserService();
-    private ClearService clearService = new ClearService();
+    private GameService gameService = new GameService(gameDAO, authDAO);
+    private UserService userService = new UserService(authDAO, userDAO);
+    private ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
 
     @Test
     public void clearTest() {

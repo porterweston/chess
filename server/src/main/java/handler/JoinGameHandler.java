@@ -6,6 +6,10 @@ import spark.*;
 import service.*;
 
 public class JoinGameHandler extends Handler{
+    public JoinGameHandler(GameService gameService, UserService userService, ClearService clearService) {
+        super(gameService, userService, clearService);
+    }
+
     public Object handleRequest(Request req, Response res) throws ErrorException {
         JoinGameRequest initialRequest = (JoinGameRequest)fromJson(req.body(), JoinGameRequest.class);
         String authToken = req.headers("authorization");
