@@ -8,14 +8,36 @@ import service.*;
 public class Server {
 
     //Handler instances
-    private final RegisterHandler registerHandler = new RegisterHandler();
-    private final LoginHandler loginHandler = new LoginHandler();
-    private final LogoutHandler logoutHandler = new LogoutHandler();
-    private final ListGamesHandler listGamesHandler = new ListGamesHandler();
-    private final CreateGameHandler createGameHandler = new CreateGameHandler();
-    private final JoinGameHandler joinGameHandler = new JoinGameHandler();
-    private final ClearHandler clearHandler = new ClearHandler();
-    private final ErrorHandler errorHandler = new ErrorHandler();
+    private RegisterHandler registerHandler;
+    private LoginHandler loginHandler;
+    private LogoutHandler logoutHandler;
+    private ListGamesHandler listGamesHandler;
+    private CreateGameHandler createGameHandler;
+    private JoinGameHandler joinGameHandler;
+    private ClearHandler clearHandler;
+    private ErrorHandler errorHandler;
+
+    //Service instances
+    private final GameService gameService;
+    private final UserService userService;
+    private final ClearService clearService;
+
+    public Server(GameService gameService, UserService userService, ClearService clearService) {
+        //initialize services
+        this.gameService = gameService;
+        this.userService = userService;
+        this.clearService = clearService;
+
+        //initialize handlers
+        registerHandler = new RegisterHandler();
+        loginHandler = new LoginHandler();
+        logoutHandler = new LogoutHandler();
+        listGamesHandler = new ListGamesHandler();
+        createGameHandler = new CreateGameHandler();
+        joinGameHandler = new JoinGameHandler();
+        clearHandler = new ClearHandler(gameService, userService, clearService);
+        errorHandler = new ErrorHandler();
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);

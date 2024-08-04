@@ -1,15 +1,20 @@
 package service;
 
-import dataaccess.memory.MemoryAuthDAO;
-import dataaccess.memory.MemoryUserDAO;
+import dataaccess.memory.*;
+import dataaccess.interfaces.*;
 import model.*;
 import dataaccess.*;
 import reqres.*;
 
 public class UserService {
 
-    private MemoryAuthDAO authDAO = new MemoryAuthDAO();
-    private MemoryUserDAO userDAO = new MemoryUserDAO();
+    private final AuthDAO authDAO;
+    private final UserDAO userDAO;
+
+    public UserService(AuthDAO authDAO, UserDAO userDAO) {
+        this.authDAO = authDAO;
+        this.userDAO = userDAO;
+    }
 
     public RegisterResult register(RegisterRequest req) throws ErrorException{
         //make new user

@@ -5,9 +5,15 @@ import service.*;
 
 public abstract class Handler {
     //service instances
-    UserService userService = new UserService();
-    GameService gameService = new GameService();
-    ClearService clearService = new ClearService();
+    public final GameService gameService;
+    public final UserService userService;
+    public final ClearService clearService;
+
+    public Handler(GameService gameService, UserService userService, ClearService clearService) {
+        this.gameService = gameService;
+        this.userService = userService;
+        this.clearService = clearService;
+    }
 
     Gson serializer = new Gson();
 

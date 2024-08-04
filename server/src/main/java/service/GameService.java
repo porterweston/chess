@@ -1,16 +1,21 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.memory.MemoryAuthDAO;
-import dataaccess.memory.MemoryGameDAO;
+import dataaccess.memory.*;
+import dataaccess.interfaces.*;
 import model.*;
 import dataaccess.*;
 import reqres.*;
 
 public class GameService {
 
-    private MemoryGameDAO gameDAO = new MemoryGameDAO();
-    private MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    private final GameDAO gameDAO;
+    private final AuthDAO authDAO;
+
+    public GameService(GameDAO gameDAO, AuthDAO authDAO) {
+        this.gameDAO = gameDAO;
+        this.authDAO = authDAO;
+    }
 
     public ListGamesResult listGames(ListGamesRequest req) throws ErrorException{
         try {

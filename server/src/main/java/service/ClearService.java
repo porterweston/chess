@@ -1,15 +1,19 @@
 package service;
-import dataaccess.memory.MemoryAuthDAO;
-import dataaccess.memory.MemoryGameDAO;
-import dataaccess.memory.MemoryUserDAO;
-import reqres.ClearRequest;
-import reqres.ClearResult;
+import dataaccess.memory.*;
+import dataaccess.interfaces.*;
+import reqres.*;
 
 public class ClearService {
 
-    MemoryUserDAO userDAO = new MemoryUserDAO();
-    MemoryGameDAO gameDAO = new MemoryGameDAO();
-    MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    private final UserDAO userDAO;
+    private final GameDAO gameDAO;
+    private final AuthDAO authDAO;
+
+    public ClearService(UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO) {
+        this.userDAO = userDAO;
+        this.gameDAO = gameDAO;
+        this.authDAO = authDAO;
+    }
 
     public ClearResult clear(ClearRequest req) {
         userDAO.deleteUsers();
