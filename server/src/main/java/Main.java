@@ -18,8 +18,5 @@ public class Main {
         } catch (Throwable e) {
             System.out.printf("Unable to start server: %s%n", e.getMessage());
         }
-
-
-        //chessServer.stop();
     }
 }

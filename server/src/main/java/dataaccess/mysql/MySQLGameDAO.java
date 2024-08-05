@@ -4,9 +4,26 @@ import dataaccess.*;
 import dataaccess.interfaces.*;
 import model.*;
 
+import javax.xml.crypto.Data;
 import java.util.Collection;
 
-public class MySQLGameDAO implements GameDAO{
+public class MySQLGameDAO extends MySQLDAO implements GameDAO{
+    public MySQLGameDAO() throws DataAccessException {
+        String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS games (
+                gameID INT NOT NULL AUTO_INCREMENT,
+                whiteUsername VARCHAR(255) DEFAULT NULL,
+                blackUsername VARCHAR(255) DEFAULT NULL,
+                gameName VARCHAR(255) NOT NULL,
+                game TEXT DEFAULT NULL,
+                PRIMARY KEY (gameID)
+            );
+            """
+        };
+        configureDatabase(createStatements);
+    }
+
     public GameData getGame(int gameID) throws DataAccessException {
         return null;
     }
