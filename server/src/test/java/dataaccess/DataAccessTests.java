@@ -42,4 +42,10 @@ public class DataAccessTests {
         UserData expectedUser = new UserData("johndoe", "12345", "johndoe@email.com");
         Assertions.assertEquals(expectedUser, actualUser);
     }
+
+    @Test
+    @Order(2)
+    public void clearUsers() {
+        userDAO.deleteUsers();
+    }
 }

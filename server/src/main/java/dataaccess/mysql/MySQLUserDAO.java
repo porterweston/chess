@@ -43,6 +43,11 @@ public class MySQLUserDAO extends MySQLDAO implements UserDAO {
     }
 
     public void deleteUsers() {
-
+        String preparedStatement = "TRUNCATE users;";
+        try {
+            executeUpdate(preparedStatement);
+        } catch (DataAccessException e) {
+            return;
+        }
     }
 }
