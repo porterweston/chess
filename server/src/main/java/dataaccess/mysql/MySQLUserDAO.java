@@ -27,7 +27,8 @@ public class MySQLUserDAO extends MySQLDAO implements UserDAO {
     }
 
     public void createUser(UserData userData) throws DataAccessException {
-
+        String preparedStatement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?);";
+        executeUpdate(preparedStatement, userData.username(), userData.password(), userData.email());
     }
 
     public void deleteUsers() {

@@ -1,6 +1,7 @@
 package dataaccess;
 
 import dataaccess.mysql.*;
+import model.*;
 
 import org.junit.jupiter.api.*;
 
@@ -25,5 +26,14 @@ public class DataAccessTests {
     @Test
     public void getUserPositive() {
         return;
+    }
+
+    @Test
+    public void createUserPositive() {
+        try {
+            userDAO.createUser(new UserData("johndoe", "12345", "johndoe@email.com"));
+        } catch (DataAccessException e) {
+            System.out.printf("Unable to create user: %s", e.getMessage());
+        }
     }
 }
