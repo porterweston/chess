@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 public class MySQLGameDAO extends MySQLDAO implements GameDAO{
     public MySQLGameDAO() throws DataAccessException {
@@ -100,6 +101,26 @@ public class MySQLGameDAO extends MySQLDAO implements GameDAO{
             executeUpdate(preparedStatement);
         } catch (DataAccessException e) {
             return;
+        }
+    }
+
+    public Collection<GameData> getGamesDatabase() {
+        HashSet<GameData> games = new HashSet<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            String preparedStatement = "SELECT * FROM games";
+            try (var ps = conn.prepareStatement(preparedStatement)) {
+                ResultSet rs = ps.executeQuery();
+                while(rs.next()) {
+                    ChessGame game = new Gson().fromJson(rs.getString("game"), ChessGame.class);
+                    GameData curGame = new GameData(rs.getInt("gameID"),
+                            rs.getString("whiteUsername"), rs.getString("blackUsername"),
+                            rs.getString("gameName"), game);
+                    games.add(curGame);
+                }
+            }
+            return games;
+        } catch (DataAccessException | SQLException e) {
+            return null;
         }
     }
 }

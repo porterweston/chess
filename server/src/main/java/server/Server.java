@@ -1,11 +1,9 @@
 package server;
 
 import com.google.gson.JsonSyntaxException;
-import dataaccess.interfaces.*;
-import dataaccess.memory.MemoryAuthDAO;
-import dataaccess.memory.MemoryGameDAO;
-import dataaccess.memory.MemoryUserDAO;
-import org.eclipse.jetty.server.Authentication;
+import dataaccess.DataAccessException;
+import dataaccess.mysql.*;
+import dataaccess.memory.*;
 import spark.*;
 import handler.*;
 import service.*;
@@ -22,12 +20,25 @@ public class Server {
     private final ClearHandler clearHandler;
     private final ErrorHandler errorHandler;
 
-    //Service instances
-    GameService gameService = new GameService(new MemoryGameDAO(), new MemoryAuthDAO());
-    UserService userService = new UserService(new MemoryAuthDAO(), new MemoryUserDAO());
-    ClearService clearService = new ClearService(new MemoryUserDAO(), new MemoryGameDAO(), new MemoryAuthDAO());
-
     public Server() {
+        //initialize databases
+        MySQLUserDAO userDAO = null;
+        MySQLAuthDAO authDAO = null;
+        MySQLGameDAO gameDAO = null;
+        try {
+            userDAO = new MySQLUserDAO();
+            authDAO = new MySQLAuthDAO();
+            gameDAO = new MySQLGameDAO();
+        } catch (DataAccessException e) {
+            System.out.printf("Unable to initialize databases: %s", e.getMessage());
+        }
+
+        //initialize services
+        GameService gameService = new GameService(gameDAO, authDAO);
+        UserService userService = new UserService(authDAO, userDAO);
+        ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
+
+        //initialize handlers
         registerHandler = new RegisterHandler(gameService, userService, clearService);
         loginHandler = new LoginHandler(gameService, userService, clearService);
         logoutHandler = new LogoutHandler(gameService, userService, clearService);

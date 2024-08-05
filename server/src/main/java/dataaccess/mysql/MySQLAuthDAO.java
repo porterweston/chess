@@ -6,6 +6,8 @@ import model.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 
 public class MySQLAuthDAO extends MySQLDAO implements AuthDAO{
@@ -59,6 +61,24 @@ public class MySQLAuthDAO extends MySQLDAO implements AuthDAO{
             executeUpdate(preparedStatement);
         } catch (DataAccessException e) {
             return;
+        }
+    }
+
+    public Collection<AuthData> getAuthsDatabase() {
+        HashSet<AuthData> auths = new HashSet<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            String preparedStatement = "SELECT * FROM auths";
+            try (var ps = conn.prepareStatement(preparedStatement)) {
+                ResultSet rs = ps.executeQuery();
+                while(rs.next()) {
+                    AuthData curAuth = new AuthData(rs.getString("authToken"),
+                            rs.getString("username"));
+                    auths.add(curAuth);
+                }
+            }
+            return auths;
+        } catch (DataAccessException | SQLException e) {
+            return null;
         }
     }
 }

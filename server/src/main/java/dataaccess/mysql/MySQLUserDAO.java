@@ -6,6 +6,8 @@ import model.*;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class MySQLUserDAO extends MySQLDAO implements UserDAO {
 
@@ -50,6 +52,24 @@ public class MySQLUserDAO extends MySQLDAO implements UserDAO {
             executeUpdate(preparedStatement);
         } catch (DataAccessException e) {
             return;
+        }
+    }
+
+    public Collection<UserData> getUsersDatabase() {
+        HashSet<UserData> users = new HashSet<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            String preparedStatement = "SELECT * FROM users";
+            try (var ps = conn.prepareStatement(preparedStatement)) {
+                ResultSet rs = ps.executeQuery();
+                while(rs.next()) {
+                    UserData curUser = new UserData(rs.getString("username"),
+                            rs.getString("password"), rs.getString("email"));
+                    users.add(curUser);
+                }
+            }
+            return users;
+        } catch (DataAccessException | SQLException e) {
+            return null;
         }
     }
 }

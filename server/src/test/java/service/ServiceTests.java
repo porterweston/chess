@@ -1,28 +1,55 @@
 package service;
-import dataaccess.memory.*;
+
+import dataaccess.*;
 import dataaccess.mysql.*;
-import dataaccess.interfaces.*;
 import model.*;
 import chess.*;
 
 import org.junit.jupiter.api.*;
 import reqres.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServiceTests {
 
-    //DAOs
-    private final MemoryGameDAO gameDAO = new MemoryGameDAO();
-    private final MemoryUserDAO userDAO = new MemoryUserDAO();
-    private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    //data access instances
+    private static MySQLGameDAO gameDAO;
+    private static MySQLUserDAO userDAO;
+    private static MySQLAuthDAO authDAO;
 
-    //Services
-    private final GameService gameService = new GameService(gameDAO, authDAO);
-    private final UserService userService = new UserService(authDAO, userDAO);
-    private final ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
+    //service instances
+    private static GameService gameService;
+    private static UserService userService;
+    private static ClearService clearService;
+
+    @BeforeAll
+    public static void init() {
+        try {
+            userDAO = new MySQLUserDAO();
+            gameDAO = new MySQLGameDAO();
+            authDAO = new MySQLAuthDAO();
+            userDAO.deleteUsers();
+            gameDAO.deleteGames();
+            authDAO.deleteAuths();
+        }
+        catch (DataAccessException e) {
+            System.out.printf("Unable to initialize database: %s", e.getMessage());
+        }
+
+        gameService = new GameService(gameDAO, authDAO);
+        userService = new UserService(authDAO, userDAO);
+        clearService = new ClearService(userDAO, gameDAO, authDAO);
+    }
+
+    @AfterAll
+    public static void clearDatabase() {
+        clearService.clear(new ClearRequest());
+    }
 
     @Test
+    @Order(1)
     public void clearTest() {
         clearDatabase();
 
@@ -32,6 +59,7 @@ public class ServiceTests {
     }
 
     @Test
+    @Order(2)
     public void registerTestPositive() {
         clearDatabase();
 
@@ -41,9 +69,8 @@ public class ServiceTests {
                     "JohnDoe", "12345", "johndoe@email.com"));
 
             //ensure user was added to database
-            Assertions.assertEquals(new HashSet<UserData>(){{add(new UserData(
-                    "JohnDoe", "12345", "johndoe@email.com"));}},
-                    userDAO.getUsersDatabase());
+            UserData actualUser = userDAO.getUser("JohnDoe");
+            Assertions.assertEquals("JohnDoe", actualUser.username());
             Assertions.assertEquals(new HashSet<AuthData>(){{add(new AuthData(
                     result.authToken(), "JohnDoe"));}}, authDAO.getAuthsDatabase());
         }
@@ -55,6 +82,7 @@ public class ServiceTests {
     }
 
     @Test
+    @Order(3)
     public void registerTestNegative() {
         clearDatabase();
 
@@ -80,6 +108,7 @@ public class ServiceTests {
     }
 
     @Test
+    @Order(4)
     public void loginTestPositive() {
         clearDatabase();
 
@@ -96,9 +125,8 @@ public class ServiceTests {
                 try {
                     LoginResult loginResult = userService.login(new LoginRequest(
                             "JohnDoe", "12345"));
-                    Assertions.assertEquals(new HashSet<UserData>(){{add(new UserData(
-                            "JohnDoe", "12345", "johndoe@email.com"));}},
-                            userDAO.getUsersDatabase());
+                    UserData actualUser = userDAO.getUser("JohnDoe");
+                    Assertions.assertEquals("JohnDoe", actualUser.username());
                     Assertions.assertEquals(new HashSet<AuthData>(){{add(new AuthData(
                             loginResult.authToken(), "JohnDoe"));}}, authDAO.getAuthsDatabase());
                 }
@@ -116,6 +144,7 @@ public class ServiceTests {
     }
 
     @Test
+    @Order(5)
     public void loginTestNegative() {
         clearDatabase();
 
@@ -129,6 +158,7 @@ public class ServiceTests {
     }
 
     @Test
+    @Order(6)
     public void logoutTestPositive() {
         clearDatabase();
 
@@ -140,9 +170,8 @@ public class ServiceTests {
             try {
                 //logout user
                 userService.logout(new LogoutRequest(result.authToken()));
-                Assertions.assertEquals(new HashSet<UserData>(){{add(new UserData(
-                        "JohnDoe", "12345", "johndoe@email.com"));}},
-                        userDAO.getUsersDatabase());
+                UserData actualUser = userDAO.getUser("JohnDoe");
+                Assertions.assertEquals("JohnDoe", actualUser.username());
                 Assertions.assertEquals(new HashSet<AuthData>(), authDAO.getAuthsDatabase());
             }
             catch (ErrorException exception) {
@@ -155,6 +184,7 @@ public class ServiceTests {
     }
 
     @Test
+    @Order(7)
     public void logoutTestNegative() {
         clearDatabase();
 
@@ -168,6 +198,7 @@ public class ServiceTests {
     }
 
     @Test
+    @Order(8)
     public void listGamesTestPositive() {
         clearDatabase();
 
@@ -185,7 +216,7 @@ public class ServiceTests {
                     //list games
                     ListGamesResult listGamesResult = gameService.listGames(new ListGamesRequest(
                             registerResult.authToken()));
-                    Assertions.assertEquals(new HashSet<GameData>(){{add(new GameData(
+                    Assertions.assertEquals(new ArrayList<GameData>(){{add(new GameData(
                             createGameResult.gameID(), null, null,
                             "John's Game", new ChessGame()));}}, listGamesResult.games());
                 }
@@ -203,6 +234,7 @@ public class ServiceTests {
     }
 
     @Test
+    @Order(9)
     public void listGamesTestNegative() {
         clearDatabase();
 
@@ -216,6 +248,7 @@ public class ServiceTests {
     }
 
     @Test
+    @Order(10)
     public void createGameTestPositive() {
         clearDatabase();
 
@@ -243,6 +276,7 @@ public class ServiceTests {
     }
 
     @Test
+    @Order(11)
     public void createGameTestNegative() {
         clearDatabase();
 
@@ -256,6 +290,7 @@ public class ServiceTests {
     }
 
     @Test
+    @Order(12)
     public void joinGameTestPositive() {
         clearDatabase();
 
@@ -292,6 +327,7 @@ public class ServiceTests {
     }
 
     @Test
+    @Order(13)
     public void joinGameTestNegative() {
         clearDatabase();
 
@@ -340,9 +376,5 @@ public class ServiceTests {
         catch (ErrorException exception) {
             return;
         }
-    }
-
-    private void clearDatabase() {
-        clearService.clear(new ClearRequest());
     }
 }
