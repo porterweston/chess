@@ -12,12 +12,17 @@ public class DataAccessTests {
     private static MySQLGameDAO gameDAO;
     private static MySQLAuthDAO authDAO;
 
+    private static String currentAuthToken;
+
     @BeforeAll
     public static void init() {
         try {
             userDAO = new MySQLUserDAO();
             gameDAO = new MySQLGameDAO();
             authDAO = new MySQLAuthDAO();
+            userDAO.deleteUsers();
+            gameDAO.deleteGames();
+            authDAO.deleteAuths();
         }
         catch (DataAccessException e) {
             System.out.printf("Unable to initialize database: %s", e.getMessage());
@@ -68,5 +73,62 @@ public class DataAccessTests {
         userDAO.deleteUsers();
         UserData actualUser = userDAO.getUser("johndoe");
         Assertions.assertNull(actualUser);
+    }
+
+    /*
+        AUTH TESTS
+     */
+    @Test
+    @Order(6)
+    public void createAuthPositive() {
+        createUserPositive();
+        currentAuthToken = authDAO.createAuth("johndoe");
+        getAuthPositive();
+    }
+
+    @Test
+    @Order(7)
+    public void createAuthNegative() {
+        //try to create auth for null user
+        String actualAuthToken = authDAO.createAuth(null);
+        Assertions.assertNull(actualAuthToken);
+    }
+
+    @Test
+    @Order(8)
+    public void getAuthPositive() {
+        try {
+            AuthData actualAuth = authDAO.getAuth(currentAuthToken);
+            AuthData expectedAuth = new AuthData(currentAuthToken, "johndoe");
+            Assertions.assertEquals(expectedAuth, actualAuth);
+        } catch (DataAccessException e) {
+            return;
+        }
+    }
+
+    @Test
+    @Order(9)
+    public void getAuthNegative() {
+        //try to get non-existing auth
+        Assertions.assertThrows(DataAccessException.class, () -> authDAO.getAuth("12345"));
+    }
+
+    @Test
+    @Order(10)
+    public void deleteAuth() {
+        try {
+            authDAO.deleteAuth(currentAuthToken);
+            Assertions.assertThrows(DataAccessException.class, () -> authDAO.getAuth(currentAuthToken));
+        } catch (DataAccessException e) {
+            return;
+        }
+    }
+
+    @Test
+    @Order(11)
+    public void clearAuths() {
+        userDAO.deleteUsers();
+        authDAO.deleteAuths();
+        Assertions.assertThrows(DataAccessException.class, () -> authDAO.getAuth(currentAuthToken));
     }
 }
