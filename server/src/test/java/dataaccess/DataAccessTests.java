@@ -4,6 +4,7 @@ import dataaccess.mysql.*;
 import model.*;
 
 import org.junit.jupiter.api.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DataAccessTests {
@@ -55,8 +56,9 @@ public class DataAccessTests {
     @Order(3)
     public void getUserPositive() {
         UserData actualUser = userDAO.getUser("johndoe");
-        UserData expectedUser = new UserData("johndoe", "12345", "johndoe@email.com");
-        Assertions.assertEquals(expectedUser, actualUser);
+        Assertions.assertEquals("johndoe", actualUser.username());
+        Assertions.assertTrue(BCrypt.checkpw("12345", actualUser.password()));
+        Assertions.assertEquals("johndoe@email.com", actualUser.email());
     }
 
     @Test

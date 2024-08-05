@@ -3,6 +3,7 @@ package dataaccess.mysql;
 import dataaccess.*;
 import dataaccess.interfaces.*;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 
@@ -39,7 +40,8 @@ public class MySQLUserDAO extends MySQLDAO implements UserDAO {
 
     public void createUser(UserData userData) throws DataAccessException {
         String preparedStatement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?);";
-        executeUpdate(preparedStatement, userData.username(), userData.password(), userData.email());
+        String hashedPassword = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
+        executeUpdate(preparedStatement, userData.username(), hashedPassword, userData.email());
     }
 
     public void deleteUsers() {

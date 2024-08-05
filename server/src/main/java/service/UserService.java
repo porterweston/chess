@@ -4,6 +4,7 @@ import dataaccess.memory.*;
 import dataaccess.interfaces.*;
 import model.*;
 import dataaccess.*;
+import org.mindrot.jbcrypt.BCrypt;
 import reqres.*;
 
 public class UserService {
@@ -40,7 +41,7 @@ public class UserService {
         UserData user = userDAO.getUser(req.username());
 
         //ensure user exists and passwords match
-        if (user == null || !user.password().equals(req.password())) {
+        if (user == null || !BCrypt.checkpw(req.password(), user.password())) {
             throw new ErrorException(401, "unauthorized");
         }
 
