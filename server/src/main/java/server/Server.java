@@ -38,18 +38,6 @@ public class Server {
         errorHandler = new ErrorHandler(gameService, userService, clearService);
     }
 
-    public Server(GameService gameService, UserService userService, ClearService clearService) {
-        //initialize handlers
-        registerHandler = new RegisterHandler(gameService, userService, clearService);
-        loginHandler = new LoginHandler(gameService, userService, clearService);
-        logoutHandler = new LogoutHandler(gameService, userService, clearService);
-        listGamesHandler = new ListGamesHandler(gameService, userService, clearService);
-        createGameHandler = new CreateGameHandler(gameService, userService, clearService);
-        joinGameHandler = new JoinGameHandler(gameService, userService, clearService);
-        clearHandler = new ClearHandler(gameService, userService, clearService);
-        errorHandler = new ErrorHandler(gameService, userService, clearService);
-    }
-
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
