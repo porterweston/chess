@@ -7,6 +7,9 @@ import model.*;
 import java.sql.SQLException;
 
 public class MySQLUserDAO implements UserDAO{
+    public MySQLUserDAO() throws DataAccessException {
+        configureDatabase();
+    }
     public UserData getUser(String username) {
         return null;
     }

@@ -13,14 +13,14 @@ import java.util.HashSet;
 public class ServiceTests {
 
     //DAOs
-    private MemoryGameDAO gameDAO = new MemoryGameDAO();
-    private MemoryUserDAO userDAO = new MemoryUserDAO();
-    private MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    private final MemoryGameDAO gameDAO = new MemoryGameDAO();
+    private final MemoryUserDAO userDAO = new MemoryUserDAO();
+    private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
     //Services
-    private GameService gameService = new GameService(gameDAO, authDAO);
-    private UserService userService = new UserService(authDAO, userDAO);
-    private ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
+    private final GameService gameService = new GameService(gameDAO, authDAO);
+    private final UserService userService = new UserService(authDAO, userDAO);
+    private final ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
 
     @Test
     public void clearTest() {
