@@ -4,7 +4,7 @@ import dataaccess.*;
 import dataaccess.interfaces.*;
 import model.*;
 
-import java.sql.SQLException;
+import java.sql.*;
 
 public class MySQLUserDAO extends MySQLDAO implements UserDAO {
 
@@ -23,7 +23,18 @@ public class MySQLUserDAO extends MySQLDAO implements UserDAO {
     }
 
     public UserData getUser(String username) {
-        return null;
+        try (var conn = DatabaseManager.getConnection()) {
+            String preparedStatement = "SELECT username, password, email FROM users WHERE username=?;";
+            try (var ps = conn.prepareStatement(preparedStatement)) {
+                ps.setString(1, username);
+                ResultSet rs = ps.executeQuery();
+                rs.next();
+                return new UserData(rs.getString("username"),
+                        rs.getString("password"), rs.getString("email"));
+            }
+        } catch (DataAccessException | SQLException e) {
+            return null;
+        }
     }
 
     public void createUser(UserData userData) throws DataAccessException {

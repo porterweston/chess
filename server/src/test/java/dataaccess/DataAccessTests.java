@@ -23,17 +23,23 @@ public class DataAccessTests {
         }
     }
 
-    @Test
-    public void getUserPositive() {
-        return;
-    }
+
 
     @Test
+    @Order(0)
     public void createUserPositive() {
         try {
             userDAO.createUser(new UserData("johndoe", "12345", "johndoe@email.com"));
         } catch (DataAccessException e) {
             System.out.printf("Unable to create user: %s", e.getMessage());
         }
+    }
+
+    @Test
+    @Order(1)
+    public void getUserPositive() {
+        UserData actualUser = userDAO.getUser("johndoe");
+        UserData expectedUser = new UserData("johndoe", "12345", "johndoe@email.com");
+        Assertions.assertEquals(expectedUser, actualUser);
     }
 }
