@@ -24,12 +24,12 @@ public abstract class MySQLDAO {
                 ps.executeUpdate();
 
                 var rs = ps.getGeneratedKeys();
-                var ID = 0;
+                var id = 0;
                 if (rs.next()) {
-                    ID = rs.getInt(1);
+                    id = rs.getInt(1);
                 }
 
-                return ID;
+                return id;
             }
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
