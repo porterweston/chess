@@ -10,17 +10,19 @@ public class ServerFacade {
     private final int serverPort;
     private final String serverURL;
 
-    public ServerFacade(int port) throws Exception{
+    public ServerFacade(int port){
         this.serverPort = port;
         this.serverURL = "http://localhost";
     }
 
-    public void clear() {
-        String path = "/clear";
+    public void clear() throws ResponseException{
+        String path = "/db";
+        makeRequest("CLEAR", path, null, null);
     }
 
-    public RegisterResult register() {
-        return null;
+    public RegisterResult register(RegisterRequest req) throws ResponseException{
+        String path = "/user";
+        return makeRequest("POST", path, req, RegisterResult.class);
     }
 
     public LoginResult login() {
