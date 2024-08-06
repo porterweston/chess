@@ -1,9 +1,14 @@
 package client;
 
+import dataaccess.DataAccessException;
 import org.junit.jupiter.api.*;
 import server.Server;
 import facade.*;
 import reqres.*;
+import dataaccess.mysql.*;
+import model.*;
+
+import java.util.HashSet;
 
 
 public class ServerFacadeTests {
@@ -26,8 +31,19 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void sampleTest() {
-        Assertions.assertTrue(true);
+    public void clear() {
+        try {
+            facade.clear();
+            //ensure database is empty
+            MySQLUserDAO userDAO = new MySQLUserDAO();
+            MySQLGameDAO gameDAO = new MySQLGameDAO();
+            MySQLAuthDAO authDAO = new MySQLAuthDAO();
+            Assertions.assertEquals(new HashSet<UserData>(), userDAO.getUsersDatabase());
+            Assertions.assertEquals(new HashSet<GameData>(), gameDAO.getGamesDatabase());
+            Assertions.assertEquals(new HashSet<AuthData>(), authDAO.getAuthsDatabase());
+        } catch (Exception e) {
+            return;
+        }
     }
 
     @Test

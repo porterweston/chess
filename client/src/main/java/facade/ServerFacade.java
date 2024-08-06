@@ -17,7 +17,7 @@ public class ServerFacade {
 
     public void clear() throws ResponseException{
         String path = "/db";
-        makeRequest("CLEAR", path, null, null);
+        makeRequest("DELETE", path, null, null);
     }
 
     public RegisterResult register(RegisterRequest req) throws ResponseException{
