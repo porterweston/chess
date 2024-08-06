@@ -25,24 +25,29 @@ public class ServerFacade {
         return makeRequest("POST", path, req, RegisterResult.class);
     }
 
-    public LoginResult login() {
-        return null;
+    public LoginResult login(LoginRequest req) throws ResponseException{
+        String path = "/session";
+        return makeRequest("POST", path, req, LoginResult.class);
     }
 
-    public LogoutResult logout() {
-        return null;
+    public void logout(LogoutRequest req) throws ResponseException{
+        String path = "/session";
+        makeRequest("DELETE", path, req, null);
     }
 
-    public ListGamesResult listGames() {
-        return null;
+    public ListGamesResult listGames(ListGamesRequest req) throws ResponseException{
+        String path = "/game";
+        return makeRequest("GET", path, req, ListGamesResult.class);
     }
 
-    public CreateGameResult createGame() {
-        return null;
+    public CreateGameResult createGame(CreateGameRequest req) throws ResponseException{
+        String path = "/game";
+        return makeRequest("POST", path, req, CreateGameResult.class);
     }
 
-    public JoinGameResult joinGame() {
-        return null;
+    public void joinGame(JoinGameRequest req) throws ResponseException{
+        String path = "/game";
+        makeRequest("PUT", path, req, null);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException{
@@ -61,6 +66,14 @@ public class ServerFacade {
         }
     }
 
+    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
+        var status = http.getResponseCode();
+        //if status code isn't successful
+        if (!(status / 100 == 2)) {
+            throw new ResponseException(status, "failure: " + status);
+        }
+    }
+
     private void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
             http.addRequestProperty("Content-Type", "application/json");
@@ -68,14 +81,6 @@ public class ServerFacade {
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }
-        }
-    }
-
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
-        var status = http.getResponseCode();
-        //if status code isn't successful
-        if (!(status / 100 == 2)) {
-            throw new ResponseException(status, "failure: " + status);
         }
     }
 
