@@ -23,6 +23,16 @@ public abstract class UI {
 
     public abstract String eval(String line);
 
+    public String quit() throws ResponseException {
+        try {
+            facade.logout(new LogoutRequest(authToken));
+            return String.format("%s%s%n%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE,
+                    "Logging out...", "Quitting application...");
+        } catch (ResponseException e) {
+            throw new ResponseException(e.errorCode, "");
+        }
+    }
+
     public String handleError(int errorCode) {
         StringBuilder str = new StringBuilder();
         str.append(EscapeSequences.SET_TEXT_COLOR_BLUE);

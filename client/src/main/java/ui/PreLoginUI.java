@@ -36,7 +36,8 @@ public class PreLoginUI extends UI{
                 "help - with available commands");
     }
 
-    private String quit() {
+    @Override
+    public String quit() {
         return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Quitting application...");
     }
 

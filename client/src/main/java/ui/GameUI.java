@@ -23,14 +23,4 @@ public abstract class GameUI extends UI{
     }
 
     public abstract String help();
-
-    private String quit() throws ResponseException {
-        try {
-            facade.logout(new LogoutRequest(authToken));
-            return String.format("%s%s%n%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE,
-                    "Logging out...", "Quitting application...");
-        } catch (ResponseException e) {
-            throw new ResponseException(e.errorCode, "");
-        }
-    }
 }

@@ -44,15 +44,15 @@ public class ServerFacade {
 
     public CreateGameResult createGame(CreateGameRequest req) throws ResponseException{
         String path = "/game";
-        record bodyRequest(String gameName) {};
-        return makeRequest("POST", path, req.authToken(), new bodyRequest(req.gameName()),
+        record BodyRequest(String gameName) {};
+        return makeRequest("POST", path, req.authToken(), new BodyRequest(req.gameName()),
                 CreateGameResult.class);
     }
 
     public void joinGame(JoinGameRequest req) throws ResponseException{
         String path = "/game";
-        record bodyRequest(ChessGame.TeamColor playerColor, int gameID) {};
-        makeRequest("PUT", path, req.authToken(), new bodyRequest(req.playerColor(), req.gameID()),
+        record BodyRequest(ChessGame.TeamColor playerColor, int gameID) {};
+        makeRequest("PUT", path, req.authToken(), new BodyRequest(req.playerColor(), req.gameID()),
                 null);
     }
 
