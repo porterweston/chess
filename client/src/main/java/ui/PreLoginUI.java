@@ -42,29 +42,29 @@ public class PreLoginUI extends UI{
 
     private String login(String[] params) throws ResponseException{
         if (params.length != 2) {
-            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Bad request, please try again");
+            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, handleError("400"));
         }
         try {
             LoginResult result = facade.login(new LoginRequest(params[0], params[1]));
             Repl.state = State.LOGGED_IN;
+            authToken = result.authToken();
             return String.format("%s%s %s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Logged in", result.username());
         } catch (ResponseException e) {
-            return String.format("%s%s: %s%n", EscapeSequences.SET_TEXT_COLOR_BLUE,
-                    "Unable to login user", e.getMessage());
+            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, handleError(e.getMessage().substring(23)));
         }
     }
 
     private String register(String[] params) throws ResponseException{
         if (params.length != 3) {
-            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Bad request, please try again");
+            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, handleError("400"));
         }
         try {
             RegisterResult result = facade.register(new RegisterRequest(params[0], params[1], params[2]));
             Repl.state = State.LOGGED_IN;
+            authToken = result.authToken();
             return String.format("%s%s %s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Registered", result.username());
         } catch (ResponseException e) {
-            return String.format("%s%s: %s%n", EscapeSequences.SET_TEXT_COLOR_BLUE,
-                    "Unable to register user", e.getMessage());
+            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, handleError(e.getMessage().substring(23)));
         }
     }
 }
