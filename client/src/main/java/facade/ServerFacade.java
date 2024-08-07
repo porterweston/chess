@@ -45,16 +45,19 @@ public class ServerFacade {
     public CreateGameResult createGame(CreateGameRequest req) throws ResponseException{
         String path = "/game";
         record bodyRequest(String gameName) {};
-        return makeRequest("POST", path, req.authToken(), new bodyRequest(req.gameName()), CreateGameResult.class);
+        return makeRequest("POST", path, req.authToken(), new bodyRequest(req.gameName()),
+                CreateGameResult.class);
     }
 
     public void joinGame(JoinGameRequest req) throws ResponseException{
         String path = "/game";
         record bodyRequest(ChessGame.TeamColor playerColor, int gameID) {};
-        makeRequest("PUT", path, req.authToken(), new bodyRequest(req.playerColor(), req.gameID()), null);
+        makeRequest("PUT", path, req.authToken(), new bodyRequest(req.playerColor(), req.gameID()),
+                null);
     }
 
-    private <T> T makeRequest(String method, String path, String headerRequest, Object bodyRequest, Class<T> responseClass) throws ResponseException{
+    private <T> T makeRequest(String method, String path, String headerRequest,
+                              Object bodyRequest, Class<T> responseClass) throws ResponseException{
         try {
             URI uri = new URI(String.format("%s:%d%s", serverURL, serverPort, path));
             HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
@@ -81,7 +84,6 @@ public class ServerFacade {
 
     private void writeHeader(String request, HttpURLConnection http) throws IOException {
         if (request != null) {
-            //String encodedRequest = Base64.getEncoder().encodeToString(request.getBytes());
             http.addRequestProperty("Authorization", request);
         }
     }

@@ -7,6 +7,7 @@ import facade.*;
 import reqres.*;
 import dataaccess.mysql.*;
 import model.*;
+import chess.*;
 
 import java.util.HashSet;
 
@@ -17,6 +18,7 @@ public class ServerFacadeTests {
     private static ServerFacade facade;
 
     private static String currentAuth;
+    private static int currentGameID;
 
     //data access instances
     private static MySQLUserDAO userDAO;
@@ -72,7 +74,8 @@ public class ServerFacadeTests {
     @Order(2)
     public void registerPositive() {
         try {
-            var result = facade.register(new RegisterRequest("johndoe", "12345", "johndoe@email.com"));
+            var result = facade.register(new RegisterRequest("johndoe", "12345",
+                    "johndoe@email.com"));
             currentAuth = result.authToken();
             Assertions.assertEquals("johndoe", result.username());
             Assertions.assertTrue(result.authToken().length() > 10);
@@ -132,6 +135,80 @@ public class ServerFacadeTests {
         try {
             facade.logout(new LogoutRequest(null));
             Assertions.fail("Logged out non-existing authToken");
+        } catch (ResponseException e) {
+            Assertions.assertEquals(500, e.errorCode);
+        }
+    }
+
+    @Test
+    @Order(8)
+    public void createGamePositive() {
+        try {
+            var loginResult = facade.login(new LoginRequest("johndoe", "12345"));
+            currentAuth = loginResult.authToken();
+            var createGameResult = facade.createGame(new CreateGameRequest(currentAuth, "john's game"));
+            currentGameID = createGameResult.gameID();
+            GameData expectedGame = new GameData(currentGameID, null, null,
+                    "john's game", new ChessGame());
+            Assertions.assertEquals(expectedGame, gameDAO.getGame(createGameResult.gameID()));
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
+
+    }
+
+    @Test
+    @Order(9)
+    public void createGameNegative() {
+        try {
+            facade.createGame(new CreateGameRequest(null, "john's bad game"));
+            Assertions.fail("Created game with bad authorization");
+        } catch (ResponseException e) {
+            Assertions.assertEquals(500, e.errorCode);
+        }
+    }
+
+    @Test
+    @Order(10)
+    public void listGamesPositive() {
+        try {
+            var result = facade.listGames(new ListGamesRequest(currentAuth));
+            Assertions.assertEquals(1, result.games().size());
+        } catch (ResponseException e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(11)
+    public void listGamesNegative() {
+        try {
+            facade.listGames(new ListGamesRequest(null));
+            Assertions.fail("Listed games with bad authorization");
+        } catch (ResponseException e) {
+            Assertions.assertEquals(500, e.errorCode);
+        }
+    }
+
+    @Test
+    @Order(12)
+    public void joinGamePositive() {
+        try {
+            facade.joinGame(new JoinGameRequest(currentAuth, ChessGame.TeamColor.WHITE, currentGameID));
+            GameData expectedGame = new GameData(currentGameID, "johndoe", null,
+                    "john's game", new ChessGame());
+            Assertions.assertEquals(expectedGame, gameDAO.getGame(currentGameID));
+        } catch (Exception e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(13)
+    public void joinGameNegative() {
+        try {
+            facade.joinGame(new JoinGameRequest(currentAuth, ChessGame.TeamColor.WHITE, currentGameID));
+            Assertions.fail("Joined game twice as the same team color");
         } catch (ResponseException e) {
             Assertions.assertEquals(500, e.errorCode);
         }
