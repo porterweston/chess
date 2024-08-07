@@ -67,12 +67,12 @@ public class PostLoginUI extends UI{
         }
         str.deleteCharAt(str.length()-1);
         String gameName = str.toString();
-        if (games.isEmpty()) {
+        if (gameIDs.isEmpty()) {
             initializeGames();
         }
         try {
             var result = facade.createGame(new CreateGameRequest(authToken, gameName));
-            games.put(games.size()+1, result.gameID());
+            gameIDs.put(gameIDs.size()-1, result.gameID());
             return String.format("%s%s \"%s\"%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Created game", gameName);
         } catch (ResponseException e) {
             throw new ResponseException(Integer.parseInt(e.getMessage().substring(23)), "");
@@ -81,7 +81,7 @@ public class PostLoginUI extends UI{
 
     private String listGames(String[] params) throws ResponseException{
         checkConnection();
-        if (games.isEmpty()) {
+        if (gameIDs.isEmpty()) {
             initializeGames();
         }
         try {
@@ -116,7 +116,8 @@ public class PostLoginUI extends UI{
 
     private String joinGame(String[] params) throws ResponseException{
         checkConnection();
-        if (games.isEmpty()) {
+        initializeGames();
+        if (gameIDs.isEmpty()) {
             return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "No games to join");
         }
         if (isBadJoinObserveInput(params)) {
@@ -133,11 +134,15 @@ public class PostLoginUI extends UI{
             if (params[1].equals("black")) {
                 playerColor = ChessGame.TeamColor.BLACK;
             }
-            int gameID = games.get(Integer.parseInt(params[0]));
+            int gameID = gameIDs.get(Integer.parseInt(params[0]));
             facade.joinGame(new JoinGameRequest(authToken, playerColor, gameID));
             Repl.state = State.IN_GAME;
-            currentGame = gameID;
-            return EscapeSequences.ERASE_SCREEN;
+            currentGameID = gameID;
+            BoardRenderer.render(getGame(currentGameID));
+            return "";
+        }
+        catch (NullPointerException e) {
+            throw new ResponseException(400, "bad request");
         }
         catch (ResponseException e) {
             throw new ResponseException(Integer.parseInt(e.getMessage().substring(23)), "");
@@ -146,18 +151,20 @@ public class PostLoginUI extends UI{
 
     private String observeGame(String[] params) throws ResponseException{
         checkConnection();
-        if (games.isEmpty()) {
+        initializeGames();
+        if (gameIDs.isEmpty()) {
             return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "No games to observe");
         }
-        if (isBadJoinObserveInput(params)) {
+        if (params.length == 0 || isBadJoinObserveInput(params)) {
             return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Please input a number");
         }
         if (params.length != 1) {
             throw new ResponseException(400, "bad request");
         }
         Repl.state = State.OBSERVING_GAME;
-        currentGame = games.get(Integer.parseInt(params[0]));
-        return EscapeSequences.ERASE_SCREEN;
+        currentGameID = gameIDs.get(Integer.parseInt(params[0]));
+        BoardRenderer.render(getGame(currentGameID));
+        return "";
     }
 
     private String logout() throws ResponseException{
@@ -172,26 +179,40 @@ public class PostLoginUI extends UI{
     }
 
     private void initializeGames() {
-        games.clear();
+        gameIDs.clear();
         try {
             var listGamesResult = facade.listGames(new ListGamesRequest(authToken));
             int i=1;
             for (GameData game : listGamesResult.games()) {
-                games.put(i, game.gameID());
+                gameIDs.put(i, game.gameID());
                 i++;
             }
 
         } catch (ResponseException e) {
-            System.out.printf("%s: %s", "Unable to initialize games", e.getMessage());
+            System.out.printf("%s: %s", "Unable to initialize gameIDs", e.getMessage());
         }
     }
 
     private boolean isBadJoinObserveInput(String[] params) {
         try {
-            games.get(Integer.parseInt(params[0]));
+            gameIDs.get(Integer.parseInt(params[0]));
             return false;
         } catch (NumberFormatException e) {
             return true;
         }
+    }
+
+    public static ChessGame getGame(int gameID) {
+        try {
+            var result = facade.listGames(new ListGamesRequest(authToken));
+            for (GameData game : result.games()) {
+                if (game.gameID() == gameID) {
+                    return game.game();
+                }
+            }
+        } catch (ResponseException e) {
+            System.out.println("unable to get game");
+        }
+        return null;
     }
 }

@@ -27,7 +27,7 @@ public class ObservingUI extends UI {
     }
 
     private String help() {
-        return "help text";
+        return "observingUI help text";
     }
 
     private String quit() throws ResponseException {

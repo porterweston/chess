@@ -27,7 +27,7 @@ public class GameplayUI extends UI{
     }
 
     private String help() {
-        return "help text";
+        return "gameplayUI help text";
     }
 
     private String quit() throws ResponseException {

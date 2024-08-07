@@ -3,20 +3,22 @@ package ui;
 import facade.*;
 import reqres.*;
 import model.*;
+import chess.*;
 
 import java.util.HashMap;
 
 public abstract class UI {
     public static ServerFacade facade;
     public static String authToken;
-    public static HashMap<Integer, Integer> games;
-    public static int currentGame;
+    //map where the key is the client's gameID and the value is the server's gameID
+    public static HashMap<Integer, Integer> gameIDs;
+    public static int currentGameID;
 
     public UI() {
         facade = new ServerFacade(8080);
         authToken = null;
-        games = new HashMap<Integer, Integer>();
-        currentGame = 0;
+        gameIDs = new HashMap<Integer, Integer>();
+        currentGameID = 0;
     }
 
     public abstract String eval(String line);
