@@ -5,8 +5,8 @@ import reqres.LogoutRequest;
 
 import java.util.Arrays;
 
-public class GameplayUI extends UI{
-    public GameplayUI() {
+public class ObservingUI extends UI {
+    public ObservingUI() {
         super();
     }
 

@@ -110,4 +110,15 @@ public class ServerFacade {
         }
         return response;
     }
+
+    public boolean isConnected() {
+        try {
+            URI uri = new URI(String.format("%s:%d", serverURL, serverPort));
+            HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+            http.connect();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

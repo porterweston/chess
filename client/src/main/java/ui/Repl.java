@@ -7,6 +7,7 @@ public class Repl {
     private static PreLoginUI preLoginUI;
     private static PostLoginUI postLoginUI;
     private static GameplayUI gameplayUI;
+    private static ObservingUI observingUI;
 
     public static State state;
 
@@ -14,6 +15,7 @@ public class Repl {
         preLoginUI = new PreLoginUI();
         postLoginUI = new PostLoginUI();
         gameplayUI = new GameplayUI();
+        observingUI = new ObservingUI();
 
         state = State.LOGGED_OUT;
     }
@@ -35,6 +37,7 @@ public class Repl {
                 case State.LOGGED_OUT -> result = preLoginUI.eval(input);
                 case State.LOGGED_IN -> result = postLoginUI.eval(input);
                 case State.IN_GAME -> result = gameplayUI.eval(input);
+                case State.OBSERVING_GAME -> result = observingUI.eval(input);
             }
             System.out.printf("%s%n", result);
         }

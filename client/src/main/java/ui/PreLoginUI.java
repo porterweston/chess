@@ -24,7 +24,7 @@ public class PreLoginUI extends UI{
                 default -> help();
             };
         } catch (ResponseException e) {
-            return e.getMessage();
+            return handleError(e.errorCode);
         }
     }
 
@@ -37,12 +37,13 @@ public class PreLoginUI extends UI{
     }
 
     private String quit() {
-        return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Quitting client...");
+        return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Quitting application...");
     }
 
     private String login(String[] params) throws ResponseException{
+        checkConnection();
         if (params.length != 2) {
-            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, handleError("400"));
+            throw new ResponseException(400, "bad request");
         }
         try {
             LoginResult result = facade.login(new LoginRequest(params[0], params[1]));
@@ -50,13 +51,14 @@ public class PreLoginUI extends UI{
             authToken = result.authToken();
             return String.format("%s%s %s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Logged in", result.username());
         } catch (ResponseException e) {
-            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, handleError(e.getMessage().substring(23)));
+            throw new ResponseException(Integer.parseInt(e.getMessage().substring(23)), "");
         }
     }
 
     private String register(String[] params) throws ResponseException{
+        checkConnection();
         if (params.length != 3) {
-            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, handleError("400"));
+            throw new ResponseException(400, "bad request");
         }
         try {
             RegisterResult result = facade.register(new RegisterRequest(params[0], params[1], params[2]));
@@ -64,7 +66,7 @@ public class PreLoginUI extends UI{
             authToken = result.authToken();
             return String.format("%s%s %s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Registered", result.username());
         } catch (ResponseException e) {
-            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, handleError(e.getMessage().substring(23)));
+            throw new ResponseException(Integer.parseInt(e.getMessage().substring(23)), "");
         }
     }
 }
