@@ -19,33 +19,30 @@ public class Repl {
     }
 
     public void run() {
-        System.out.printf("%s%n%s%s%n", EscapeSequences.ERASE_SCREEN,
+        System.out.printf("%s%n%s%s%n%s", EscapeSequences.ERASE_SCREEN,
                 String.format("%s%s", EscapeSequences.SET_TEXT_BOLD, EscapeSequences.SET_TEXT_COLOR_MAGENTA),
-                "Welcome to the CS 240 Chess Client! Type \"help\" to get started.");
+                "Welcome to the CS 240 Chess Client! Type \"help\" to get started.",
+                EscapeSequences.RESET_TEXT_BOLD_FAINT);
 
         Scanner scanner = new Scanner(System.in);
+        var input = "";
         var result = "";
-        while (!result.equals("quit")) {
+        while (!input.equals("quit")) {
             printPrompt();
-            String line = scanner.nextLine();
+            input = scanner.nextLine();
 
-            try {
-                switch (state) {
-                    case State.LOGGED_OUT -> result = preLoginUI.eval(line);
-                    case State.LOGGED_IN -> result = postLoginUI.eval(line);
-                    case State.IN_GAME -> result = gameplayUI.eval(line);
-                }
-                System.out.printf("%s%n", result);
-            } catch (Throwable e) {
-                var msg = e.toString();
-                System.out.print(msg);
+            switch (state) {
+                case State.LOGGED_OUT -> result = preLoginUI.eval(input);
+                case State.LOGGED_IN -> result = postLoginUI.eval(input);
+                case State.IN_GAME -> result = gameplayUI.eval(input);
             }
+            System.out.printf("%s%n", result);
         }
-        System.out.println();
     }
 
     private void printPrompt() {
-        System.out.printf("%s[%s] >>> ", EscapeSequences.SET_TEXT_COLOR_WHITE, state);
+        System.out.printf("%s%s[%s] >>> %s", EscapeSequences.SET_TEXT_BOLD, EscapeSequences.SET_TEXT_COLOR_WHITE, state,
+            EscapeSequences.RESET_TEXT_BOLD_FAINT);
     }
 
 }

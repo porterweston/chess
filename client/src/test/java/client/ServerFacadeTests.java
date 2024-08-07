@@ -9,8 +9,6 @@ import dataaccess.mysql.*;
 import model.*;
 import chess.*;
 
-import java.util.HashSet;
-
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServerFacadeTests {
 

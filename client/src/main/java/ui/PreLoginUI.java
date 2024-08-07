@@ -1,9 +1,9 @@
 package ui;
 
 import facade.*;
+import reqres.*;
 
 import java.util.Arrays;
-import java.util.Locale;
 
 public class PreLoginUI extends UI{
     public PreLoginUI() {
@@ -29,18 +29,42 @@ public class PreLoginUI extends UI{
     }
 
     private String help() {
-        return String.format("help text");
+        return String.format("%s%s%n%s%n%s%n%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE,
+                "register <USERNAME> <PASSWORD> <EMAIL> - a user",
+                "login <USERNAME> <PASSWORD> - to play chess",
+                "quit - the application",
+                "help - with available commands");
     }
 
     private String quit() {
-        return String.format("quit");
+        return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Quitting client...");
     }
 
     private String login(String[] params) throws ResponseException{
-        return String.format("login text");
+        if (params.length != 2) {
+            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Bad request, please try again");
+        }
+        try {
+            LoginResult result = facade.login(new LoginRequest(params[0], params[1]));
+            Repl.state = State.LOGGED_IN;
+            return String.format("%s%s %s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Logged in", result.username());
+        } catch (ResponseException e) {
+            return String.format("%s%s: %s%n", EscapeSequences.SET_TEXT_COLOR_BLUE,
+                    "Unable to login user", e.getMessage());
+        }
     }
 
     private String register(String[] params) throws ResponseException{
-        return String.format("register text");
+        if (params.length != 3) {
+            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Bad request, please try again");
+        }
+        try {
+            RegisterResult result = facade.register(new RegisterRequest(params[0], params[1], params[2]));
+            Repl.state = State.LOGGED_IN;
+            return String.format("%s%s %s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Registered", result.username());
+        } catch (ResponseException e) {
+            return String.format("%s%s: %s%n", EscapeSequences.SET_TEXT_COLOR_BLUE,
+                    "Unable to register user", e.getMessage());
+        }
     }
 }
