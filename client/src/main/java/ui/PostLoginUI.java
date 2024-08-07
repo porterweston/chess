@@ -4,7 +4,6 @@ import chess.ChessGame;
 import facade.*;
 import model.GameData;
 import reqres.*;
-import spark.Response;
 
 import java.util.Arrays;
 
