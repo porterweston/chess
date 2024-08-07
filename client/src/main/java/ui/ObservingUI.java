@@ -12,6 +12,6 @@ public class ObservingUI extends GameUI {
 
     @Override
     public String help() {
-        return String.format("%s%n", "observingUI help text");
+        return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "observingUI help text");
     }
 }

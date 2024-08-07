@@ -12,6 +12,6 @@ public class GameplayUI extends GameUI{
 
     @Override
     public String help() {
-        return String.format("%s%n", "gameplayUI help text");
+        return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "gameplayUI help text");
     }
 }

@@ -21,6 +21,7 @@ public class PreLoginUI extends UI{
                 case "quit" -> quit();
                 case "login" -> login(params);
                 case "register" -> register(params);
+                case "clear" -> clear();
                 default -> help();
             };
         } catch (ResponseException e) {
@@ -39,6 +40,15 @@ public class PreLoginUI extends UI{
     @Override
     public String quit() {
         return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Quitting application...");
+    }
+
+    private String clear() {
+        try {
+            facade.clear();
+            return String.format("%s%s", EscapeSequences.SET_TEXT_COLOR_BLUE, "Cleared database");
+        } catch (ResponseException e) {
+            return String.format("%s%s", EscapeSequences.SET_TEXT_COLOR_BLUE, "Error: unable to clear database");
+        }
     }
 
     private String login(String[] params) throws ResponseException{

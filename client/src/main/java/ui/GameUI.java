@@ -15,6 +15,7 @@ public abstract class GameUI extends UI{
             return switch (cmd) {
                 case "help" -> help();
                 case "quit" -> quit();
+                case "leave" -> leave();
                 default -> help();
             };
         } catch (ResponseException e) {
@@ -23,4 +24,9 @@ public abstract class GameUI extends UI{
     }
 
     public abstract String help();
+
+    public String leave() {
+        Repl.state = State.LOGGED_IN;
+        return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Leaving game...");
+    }
 }

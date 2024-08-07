@@ -17,11 +17,13 @@ public class BoardRenderer {
 
         out.print(EscapeSequences.ERASE_SCREEN);
 
+        out.print("\n\n");
+
         renderWhiteBottom(out);
         out.print("\n\n");
         renderBlackBottom(out);
 
-        out.print("\n");
+        out.print("\n\n");
     }
 
     private static void renderWhiteBottom(PrintStream out) {
@@ -66,6 +68,7 @@ public class BoardRenderer {
             curPos = new ChessPosition(1, 8);
         }
         renderHeader(out, color);
+        out.print(EscapeSequences.RESET_BG_COLOR);
         for (int curCol = BOARD_SIZE_IN_SQUARES; curCol >= 1; curCol--) {
             if ((curCol % 2 == 0)) {
                 renderRow(out, Color.WHITE, color);
@@ -73,14 +76,16 @@ public class BoardRenderer {
             else {
                 renderRow(out, Color.BLACK, color);
             }
-            setTextMagenta(out);
+            setTextWhite(out);
             if (color == Color.WHITE) {
                 out.printf(" %s ", curCol);
                 curPos.setRow(curPos.getRow()-1);
+                out.print(EscapeSequences.RESET_BG_COLOR);
             }
             else {
                 out.printf(" %s ", 9-curCol);
                 curPos.setRow(curPos.getRow()+1);
+                out.print(EscapeSequences.RESET_BG_COLOR);
             }
 
             if (curCol > 1) {
@@ -91,19 +96,21 @@ public class BoardRenderer {
     }
 
     private static void renderHeader(PrintStream out, Color color) {
-        setTextMagenta(out);
+        setTextWhite(out);
         if (color == Color.WHITE) {
-            out.printf(" a%sb%sc%sd%se%sf%sg%sh \n", EscapeSequences.N_EMPTY, EscapeSequences.N_EMPTY,
+            out.printf(" a%sb%sc%sd%se%sf%sg%sh ", EscapeSequences.N_EMPTY, EscapeSequences.N_EMPTY,
                     EscapeSequences.N_EMPTY, EscapeSequences.N_EMPTY,
                     EscapeSequences.N_EMPTY, EscapeSequences.N_EMPTY,
                     EscapeSequences.N_EMPTY);
         }
         else {
-            out.printf(" h%sg%sf%se%sd%sc%sb%sa \n", EscapeSequences.N_EMPTY, EscapeSequences.N_EMPTY,
+            out.printf(" h%sg%sf%se%sd%sc%sb%sa ", EscapeSequences.N_EMPTY, EscapeSequences.N_EMPTY,
                     EscapeSequences.N_EMPTY, EscapeSequences.N_EMPTY,
                     EscapeSequences.N_EMPTY, EscapeSequences.N_EMPTY,
                     EscapeSequences.N_EMPTY);
         }
+        out.print(EscapeSequences.RESET_BG_COLOR);
+        out.print("\n");
     }
 
     private static void renderPiece(PrintStream out) {
@@ -112,7 +119,7 @@ public class BoardRenderer {
             ChessPiece.PieceType type = piece.getPieceType();
             ChessGame.TeamColor color = piece.getTeamColor();
             if (color == ChessGame.TeamColor.WHITE) {
-                out.print(EscapeSequences.SET_TEXT_COLOR_BLUE);
+                out.print(EscapeSequences.SET_TEXT_COLOR_WHITE);
                 switch (type) {
                     case PAWN -> out.print(EscapeSequences.WHITE_PAWN);
                     case KNIGHT -> out.print(EscapeSequences.WHITE_KNIGHT);
@@ -123,7 +130,7 @@ public class BoardRenderer {
                 }
             }
             else {
-                out.print(EscapeSequences.SET_TEXT_COLOR_RED);
+                out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
                 switch (type) {
                     case PAWN -> out.print(EscapeSequences.BLACK_PAWN);
                     case KNIGHT -> out.print(EscapeSequences.BLACK_KNIGHT);
@@ -141,19 +148,19 @@ public class BoardRenderer {
 
     private static void setWhite(PrintStream out) {
         out.print(EscapeSequences.RESET_TEXT_BOLD_FAINT);
-        out.print(EscapeSequences.SET_BG_COLOR_WHITE);
+        out.print(EscapeSequences.SET_BG_COLOR_LIGHT_BROWN);
         out.print(EscapeSequences.SET_TEXT_COLOR_WHITE);
     }
 
     private static void setBlack(PrintStream out) {
         out.print(EscapeSequences.RESET_TEXT_BOLD_FAINT);
-        out.print(EscapeSequences.SET_BG_COLOR_BLACK);
+        out.print(EscapeSequences.SET_BG_COLOR_BROWN);
         out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
     }
 
-    private static void setTextMagenta(PrintStream out) {
-        out.print(EscapeSequences.RESET_BG_COLOR);
-        out.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA);
+    private static void setTextWhite(PrintStream out) {
+        out.print(EscapeSequences.SET_BG_COLOR_BLACK);
+        out.print(EscapeSequences.SET_TEXT_COLOR_WHITE);
         out.print(EscapeSequences.SET_TEXT_BOLD);
     }
 }

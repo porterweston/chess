@@ -21,9 +21,11 @@ public class Repl {
     }
 
     public void run() {
-        System.out.printf("%s%n%s%s%n%s", EscapeSequences.ERASE_SCREEN,
+        System.out.printf("%s%s%s%n%s", EscapeSequences.ERASE_SCREEN,
                 String.format("%s%s", EscapeSequences.SET_TEXT_BOLD, EscapeSequences.SET_TEXT_COLOR_MAGENTA),
-                "Welcome to the CS 240 Chess Client! Type \"help\" to get started.",
+                String.format("%s%s%s", EscapeSequences.WHITE_KING,
+                        "Welcome to the CS 240 Chess Client! Type <help> to get started.",
+                        EscapeSequences.WHITE_KING),
                 EscapeSequences.RESET_TEXT_BOLD_FAINT);
 
         Scanner scanner = new Scanner(System.in);
