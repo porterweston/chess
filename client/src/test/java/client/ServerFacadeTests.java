@@ -16,7 +16,12 @@ public class ServerFacadeTests {
     private static Server server;
     private static ServerFacade facade;
 
-    private String currentAuth;
+    private static String currentAuth;
+
+    //data access instances
+    private static MySQLUserDAO userDAO;
+    private static MySQLGameDAO gameDAO;
+    private static MySQLAuthDAO authDAO;
 
     @BeforeAll
     public static void init() {
@@ -28,6 +33,13 @@ public class ServerFacadeTests {
             facade.clear();
         } catch (ResponseException e) {
             System.out.printf("Unable to clear database: %s%n", e.getMessage());
+        }
+        try {
+            userDAO = new MySQLUserDAO();
+            gameDAO = new MySQLGameDAO();
+            authDAO = new MySQLAuthDAO();
+        } catch (DataAccessException e) {
+            System.out.printf("Unable to initialize DAOs: %s%n", e.getMessage());
         }
     }
 
@@ -48,12 +60,9 @@ public class ServerFacadeTests {
         try {
             facade.clear();
             //ensure database is empty
-            MySQLUserDAO userDAO = new MySQLUserDAO();
-            MySQLGameDAO gameDAO = new MySQLGameDAO();
-            MySQLAuthDAO authDAO = new MySQLAuthDAO();
-            Assertions.assertEquals(new HashSet<UserData>(), userDAO.getUsersDatabase());
-            Assertions.assertEquals(new HashSet<GameData>(), gameDAO.getGamesDatabase());
-            Assertions.assertEquals(new HashSet<AuthData>(), authDAO.getAuthsDatabase());
+            Assertions.assertTrue(userDAO.getUsersDatabase().isEmpty());
+            Assertions.assertTrue(gameDAO.getGamesDatabase().isEmpty());
+            Assertions.assertTrue(authDAO.getAuthsDatabase().isEmpty());
         } catch (Exception e) {
             Assertions.fail(e.getMessage());
         }
@@ -77,6 +86,7 @@ public class ServerFacadeTests {
     public void registerNegative() {
         try {
             var result = facade.register(new RegisterRequest(null, null, null));
+            Assertions.fail("Registered non-existing user");
         } catch (ResponseException e) {
             Assertions.assertEquals(e.errorCode, 500);
         }
@@ -98,11 +108,32 @@ public class ServerFacadeTests {
     @Order(5)
     public void loginNegative() {
         try {
-            var result = facade.login(new LoginRequest("johndoe", "12345"));
+            var result = facade.login(new LoginRequest(null, null));
+            Assertions.fail("Logged in non-existing user");
         } catch (ResponseException e) {
             Assertions.assertEquals(500, e.errorCode);
         }
     }
 
+    @Test
+    @Order(6)
+    public void logoutPositive() {
+        try {
+            facade.logout(new LogoutRequest(currentAuth));
+            Assertions.assertThrows(DataAccessException.class, () -> authDAO.getAuth(currentAuth));
+        } catch (ResponseException e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
 
+    @Test
+    @Order(7)
+    public void logoutNegative() {
+        try {
+            facade.logout(new LogoutRequest(null));
+            Assertions.fail("Logged out non-existing authToken");
+        } catch (ResponseException e) {
+            Assertions.assertEquals(500, e.errorCode);
+        }
+    }
 }

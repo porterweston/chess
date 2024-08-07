@@ -1,10 +1,12 @@
 package facade;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import reqres.*;
 
 import java.io.*;
 import java.net.*;
+import java.util.Base64;
 
 public class ServerFacade {
     private final int serverPort;
@@ -17,47 +19,50 @@ public class ServerFacade {
 
     public void clear() throws ResponseException{
         String path = "/db";
-        makeRequest("DELETE", path, null, null);
+        makeRequest("DELETE", path, null, null, null);
     }
 
     public RegisterResult register(RegisterRequest req) throws ResponseException{
         String path = "/user";
-        return makeRequest("POST", path, req, RegisterResult.class);
+        return makeRequest("POST", path, null, req, RegisterResult.class);
     }
 
     public LoginResult login(LoginRequest req) throws ResponseException{
         String path = "/session";
-        return makeRequest("POST", path, req, LoginResult.class);
+        return makeRequest("POST", path, null, req, LoginResult.class);
     }
 
     public void logout(LogoutRequest req) throws ResponseException{
         String path = "/session";
-        makeRequest("DELETE", path, req, null);
+        makeRequest("DELETE", path, req.authToken(), null, null);
     }
 
     public ListGamesResult listGames(ListGamesRequest req) throws ResponseException{
         String path = "/game";
-        return makeRequest("GET", path, req, ListGamesResult.class);
+        return makeRequest("GET", path, req.authToken(), null, ListGamesResult.class);
     }
 
     public CreateGameResult createGame(CreateGameRequest req) throws ResponseException{
         String path = "/game";
-        return makeRequest("POST", path, req, CreateGameResult.class);
+        record bodyRequest(String gameName) {};
+        return makeRequest("POST", path, req.authToken(), new bodyRequest(req.gameName()), CreateGameResult.class);
     }
 
     public void joinGame(JoinGameRequest req) throws ResponseException{
         String path = "/game";
-        makeRequest("PUT", path, req, null);
+        record bodyRequest(ChessGame.TeamColor playerColor, int gameID) {};
+        makeRequest("PUT", path, req.authToken(), new bodyRequest(req.playerColor(), req.gameID()), null);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException{
+    private <T> T makeRequest(String method, String path, String headerRequest, Object bodyRequest, Class<T> responseClass) throws ResponseException{
         try {
             URI uri = new URI(String.format("%s:%d%s", serverURL, serverPort, path));
             HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
-            writeBody(request, http);
+            writeHeader(headerRequest, http);
+            writeBody(bodyRequest, http);
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
@@ -71,6 +76,13 @@ public class ServerFacade {
         //if status code isn't successful
         if (!(status / 100 == 2)) {
             throw new ResponseException(status, "failure: " + status);
+        }
+    }
+
+    private void writeHeader(String request, HttpURLConnection http) throws IOException {
+        if (request != null) {
+            //String encodedRequest = Base64.getEncoder().encodeToString(request.getBytes());
+            http.addRequestProperty("Authorization", request);
         }
     }
 

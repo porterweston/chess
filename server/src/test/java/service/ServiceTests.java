@@ -75,7 +75,7 @@ public class ServiceTests {
                     result.authToken(), "JohnDoe"));}}, authDAO.getAuthsDatabase());
         }
         catch (ErrorException exception) {
-            return;
+            Assertions.fail(exception.getMessage());
         }
 
 
@@ -101,7 +101,7 @@ public class ServiceTests {
             }
         }
         catch (ErrorException exception) {
-            return;
+            Assertions.fail(exception.getMessage());
         }
 
 
@@ -131,15 +131,15 @@ public class ServiceTests {
                             loginResult.authToken(), "JohnDoe"));}}, authDAO.getAuthsDatabase());
                 }
                 catch (ErrorException exception) {
-                    return;
+                    Assertions.fail(exception.getMessage());
                 }
             }
             catch (ErrorException exception) {
-                return;
+                Assertions.fail(exception.getMessage());
             }
         }
         catch (ErrorException exception) {
-            return;
+            Assertions.fail(exception.getMessage());
         }
     }
 
@@ -175,11 +175,11 @@ public class ServiceTests {
                 Assertions.assertEquals(new HashSet<AuthData>(), authDAO.getAuthsDatabase());
             }
             catch (ErrorException exception) {
-                return;
+                Assertions.fail(exception.getMessage());
             }
         }
         catch (ErrorException exception) {
-            return;
+            Assertions.fail(exception.getMessage());
         }
     }
 
@@ -221,15 +221,15 @@ public class ServiceTests {
                             "John's Game", new ChessGame()));}}, listGamesResult.games());
                 }
                 catch (ErrorException exception) {
-                    return;
+                    Assertions.fail(exception.getMessage());
                 }
             }
             catch (ErrorException exception) {
-                return;
+                Assertions.fail(exception.getMessage());
             }
         }
         catch (ErrorException exception) {
-            return;
+            Assertions.fail(exception.getMessage());
         }
     }
 
@@ -267,11 +267,11 @@ public class ServiceTests {
                         "John's Game", new ChessGame()));}}, gameDAO.getGamesDatabase());
             }
             catch (ErrorException exception) {
-                return;
+                Assertions.fail(exception.getMessage());
             }
         }
         catch (ErrorException exception) {
-            return;
+            Assertions.fail(exception.getMessage());
         }
     }
 
@@ -314,15 +314,15 @@ public class ServiceTests {
                             "John's Game", new ChessGame()));}}, gameDAO.getGamesDatabase());
                 }
                 catch (ErrorException exception) {
-                    return;
+                    Assertions.fail(exception.getMessage());
                 }
             }
             catch (ErrorException exception) {
-                return;
+                Assertions.fail(exception.getMessage());
             }
         }
         catch (ErrorException exception) {
-            return;
+            Assertions.fail(exception.getMessage());
         }
     }
 
@@ -374,7 +374,7 @@ public class ServiceTests {
             }
         }
         catch (ErrorException exception) {
-            return;
+            Assertions.fail(exception.getMessage());
         }
     }
 }
