@@ -1,5 +1,6 @@
 package handler;
 
+import service.ErrorException;
 import reqres.ClearRequest;
 import reqres.ClearResult;
 import spark.*;

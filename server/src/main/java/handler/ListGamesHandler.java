@@ -1,5 +1,6 @@
 package handler;
 
+import service.ErrorException;
 import reqres.ListGamesRequest;
 import reqres.ListGamesResult;
 import spark.*;

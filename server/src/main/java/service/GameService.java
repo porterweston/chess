@@ -1,7 +1,6 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.memory.*;
 import dataaccess.interfaces.*;
 import model.*;
 import dataaccess.*;
@@ -17,7 +16,7 @@ public class GameService {
         this.authDAO = authDAO;
     }
 
-    public ListGamesResult listGames(ListGamesRequest req) throws ErrorException{
+    public ListGamesResult listGames(ListGamesRequest req) throws ErrorException {
         try {
             //verify authorization
             AuthData auth = authDAO.getAuth(req.authToken());

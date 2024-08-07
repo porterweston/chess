@@ -1,6 +1,5 @@
 package service;
 
-import dataaccess.memory.*;
 import dataaccess.interfaces.*;
 import model.*;
 import dataaccess.*;
@@ -17,7 +16,7 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
-    public RegisterResult register(RegisterRequest req) throws ErrorException{
+    public RegisterResult register(RegisterRequest req) throws ErrorException {
         //make new user
         try {
             UserData newUser = new UserData(req.username(), req.password(), req.email());

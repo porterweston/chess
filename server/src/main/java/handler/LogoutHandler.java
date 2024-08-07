@@ -1,5 +1,6 @@
 package handler;
 
+import service.ErrorException;
 import reqres.LogoutRequest;
 import reqres.LogoutResult;
 import spark.*;

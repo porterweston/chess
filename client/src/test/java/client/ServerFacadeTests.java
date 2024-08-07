@@ -10,11 +10,13 @@ import model.*;
 
 import java.util.HashSet;
 
-
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServerFacadeTests {
 
     private static Server server;
     private static ServerFacade facade;
+
+    private String currentAuth;
 
     @BeforeAll
     public static void init() {
@@ -22,15 +24,26 @@ public class ServerFacadeTests {
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade(port);
+        try {
+            facade.clear();
+        } catch (ResponseException e) {
+            System.out.printf("Unable to clear database: %s%n", e.getMessage());
+        }
     }
 
     @AfterAll
     static void stopServer() {
+        try {
+            facade.clear();
+        } catch (ResponseException e) {
+            System.out.printf("Unable to clear database: %s%n", e.getMessage());
+        }
         server.stop();
     }
 
 
     @Test
+    @Order(1)
     public void clear() {
         try {
             facade.clear();
@@ -42,22 +55,25 @@ public class ServerFacadeTests {
             Assertions.assertEquals(new HashSet<GameData>(), gameDAO.getGamesDatabase());
             Assertions.assertEquals(new HashSet<AuthData>(), authDAO.getAuthsDatabase());
         } catch (Exception e) {
-            return;
+            Assertions.fail(e.getMessage());
         }
     }
 
     @Test
+    @Order(2)
     public void registerPositive() {
         try {
             var result = facade.register(new RegisterRequest("johndoe", "12345", "johndoe@email.com"));
+            currentAuth = result.authToken();
             Assertions.assertEquals("johndoe", result.username());
             Assertions.assertTrue(result.authToken().length() > 10);
         } catch (ResponseException e) {
-            return;
+            Assertions.fail(e.getMessage());
         }
     }
 
     @Test
+    @Order(3)
     public void registerNegative() {
         try {
             var result = facade.register(new RegisterRequest(null, null, null));
@@ -65,5 +81,28 @@ public class ServerFacadeTests {
             Assertions.assertEquals(e.errorCode, 500);
         }
     }
+
+    @Test
+    @Order(4)
+    public void loginPositive() {
+        try {
+            var result = facade.login(new LoginRequest("johndoe", "12345"));
+            Assertions.assertNotEquals(currentAuth, result.authToken());
+            Assertions.assertTrue(result.authToken().length() > 10);
+        } catch (ResponseException e) {
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(5)
+    public void loginNegative() {
+        try {
+            var result = facade.login(new LoginRequest("johndoe", "12345"));
+        } catch (ResponseException e) {
+            Assertions.assertEquals(500, e.errorCode);
+        }
+    }
+
 
 }

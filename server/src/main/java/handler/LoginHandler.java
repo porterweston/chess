@@ -1,5 +1,6 @@
 package handler;
 
+import service.ErrorException;
 import reqres.LoginRequest;
 import reqres.LoginResult;
 import spark.*;

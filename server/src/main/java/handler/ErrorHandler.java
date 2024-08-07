@@ -1,8 +1,8 @@
 package handler;
 
 import com.google.gson.JsonSyntaxException;
+import service.ErrorException;
 import spark.*;
-import model.*;
 import service.*;
 
 public class ErrorHandler extends Handler{
