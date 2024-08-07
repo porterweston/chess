@@ -15,6 +15,9 @@ public class PostLoginUI extends UI{
 
     @Override
     public String eval(String line) {
+        if (gameIDs.isEmpty()) {
+            initializeGameIDs();
+        }
         var tokens = line.toLowerCase().split(" ");
         var cmd = tokens[0];
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -67,12 +70,9 @@ public class PostLoginUI extends UI{
         }
         str.deleteCharAt(str.length()-1);
         String gameName = str.toString();
-        if (gameIDs.isEmpty()) {
-            initializeGames();
-        }
         try {
             var result = facade.createGame(new CreateGameRequest(authToken, gameName));
-            gameIDs.put(gameIDs.size()-1, result.gameID());
+            gameIDs.put(gameIDs.size()+1, result.gameID());
             return String.format("%s%s \"%s\"%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Created game", gameName);
         } catch (ResponseException e) {
             throw new ResponseException(Integer.parseInt(e.getMessage().substring(23)), "");
@@ -81,9 +81,6 @@ public class PostLoginUI extends UI{
 
     private String listGames(String[] params) throws ResponseException{
         checkConnection();
-        if (gameIDs.isEmpty()) {
-            initializeGames();
-        }
         try {
             var result = facade.listGames(new ListGamesRequest(authToken));
             if (result.games().isEmpty()) {
@@ -116,11 +113,10 @@ public class PostLoginUI extends UI{
 
     private String joinGame(String[] params) throws ResponseException{
         checkConnection();
-        initializeGames();
         if (gameIDs.isEmpty()) {
             return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "No games to join");
         }
-        if (isBadJoinObserveInput(params)) {
+        if (params.length == 0 || isBadJoinObserveInput(params)) {
             return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Please input a number");
         }
         if (params.length != 2) {
@@ -151,7 +147,6 @@ public class PostLoginUI extends UI{
 
     private String observeGame(String[] params) throws ResponseException{
         checkConnection();
-        initializeGames();
         if (gameIDs.isEmpty()) {
             return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "No games to observe");
         }
@@ -161,8 +156,12 @@ public class PostLoginUI extends UI{
         if (params.length != 1) {
             throw new ResponseException(400, "bad request");
         }
+        try {
+            currentGameID = gameIDs.get(Integer.parseInt(params[0]));
+        } catch (Exception e) {
+            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "ID out of range");
+        }
         Repl.state = State.OBSERVING_GAME;
-        currentGameID = gameIDs.get(Integer.parseInt(params[0]));
         BoardRenderer.render(getGame(currentGameID));
         return "";
     }
@@ -178,7 +177,7 @@ public class PostLoginUI extends UI{
         }
     }
 
-    private void initializeGames() {
+    private void initializeGameIDs() {
         gameIDs.clear();
         try {
             var listGamesResult = facade.listGames(new ListGamesRequest(authToken));
@@ -193,6 +192,7 @@ public class PostLoginUI extends UI{
         }
     }
 
+    //returns if a given set of parameters has bad input for join or observe commands
     private boolean isBadJoinObserveInput(String[] params) {
         try {
             gameIDs.get(Integer.parseInt(params[0]));
@@ -200,19 +200,5 @@ public class PostLoginUI extends UI{
         } catch (NumberFormatException e) {
             return true;
         }
-    }
-
-    public static ChessGame getGame(int gameID) {
-        try {
-            var result = facade.listGames(new ListGamesRequest(authToken));
-            for (GameData game : result.games()) {
-                if (game.gameID() == gameID) {
-                    return game.game();
-                }
-            }
-        } catch (ResponseException e) {
-            System.out.println("unable to get game");
-        }
-        return null;
     }
 }

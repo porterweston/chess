@@ -37,11 +37,11 @@ public class Repl {
                 case LOGGED_OUT -> result = preLoginUI.eval(input);
                 case LOGGED_IN -> result = postLoginUI.eval(input);
                 case IN_GAME -> {
-                    BoardRenderer.render(PostLoginUI.getGame(UI.currentGameID));
+                    BoardRenderer.render(UI.getGame(UI.currentGameID));
                     result = gameplayUI.eval(input);
                 }
                 case OBSERVING_GAME -> {
-                    BoardRenderer.render(PostLoginUI.getGame(UI.currentGameID));
+                    BoardRenderer.render(UI.getGame(UI.currentGameID));
                     result = observingUI.eval(input);
                 }
             }

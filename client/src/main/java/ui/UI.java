@@ -41,4 +41,18 @@ public abstract class UI {
             throw new ResponseException(500, "not connected");
         }
     }
+
+    public static ChessGame getGame(int gameID) {
+        try {
+            var result = facade.listGames(new ListGamesRequest(authToken));
+            for (GameData game : result.games()) {
+                if (game.gameID() == gameID) {
+                    return game.game();
+                }
+            }
+        } catch (ResponseException e) {
+            System.out.println("unable to get game");
+        }
+        return null;
+    }
 }
