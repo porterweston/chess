@@ -148,7 +148,7 @@ public class PostLoginUI extends UI{
         try {
             currentGameID = gameIDs.get(Integer.parseInt(params[0]));
         } catch (Exception e) {
-            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "ID out of range");
+            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Game doesn't exist");
         }
         Repl.state = State.OBSERVING_GAME;
         BoardRenderer.render(getGame(currentGameID));

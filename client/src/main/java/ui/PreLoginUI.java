@@ -45,9 +45,9 @@ public class PreLoginUI extends UI{
     private String clear() {
         try {
             facade.clear();
-            return String.format("%s%s", EscapeSequences.SET_TEXT_COLOR_BLUE, "Cleared database");
+            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Cleared database");
         } catch (ResponseException e) {
-            return String.format("%s%s", EscapeSequences.SET_TEXT_COLOR_BLUE, "Error: unable to clear database");
+            return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Error: unable to clear database");
         }
     }
 
