@@ -19,6 +19,7 @@ public class Server {
     private final JoinGameHandler joinGameHandler;
     private final ClearHandler clearHandler;
     private final ErrorHandler errorHandler;
+    private final WebSocketHandler webSocketHandler;
 
     public Server() {
         //initialize databases
@@ -47,12 +48,16 @@ public class Server {
         joinGameHandler = new JoinGameHandler(gameService, userService, clearService);
         clearHandler = new ClearHandler(gameService, userService, clearService);
         errorHandler = new ErrorHandler(gameService, userService, clearService);
+        webSocketHandler = new WebSocketHandler();
     }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        //Websocket
+        Spark.webSocket("/ws", webSocketHandler);
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", registerHandler::handleRequest);
