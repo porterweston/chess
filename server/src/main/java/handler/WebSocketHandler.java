@@ -15,19 +15,9 @@ public class WebSocketHandler {
     private final WebSocketSessions sessions = new WebSocketSessions();
     private final WebSocketService service = new WebSocketService();
 
-    @OnWebSocketConnect
-    public void onConnect(Session session) {
-
-    }
-
-    @OnWebSocketClose
-    public void onClose(Session session) {
-
-    }
-
     @OnWebSocketError
-    public void onError(Throwable throwable) {
-
+    public void onError(Throwable throwable) throws ErrorException{
+        throw new ErrorException(400, "Web Socket Error");
     }
 
     @OnWebSocketMessage

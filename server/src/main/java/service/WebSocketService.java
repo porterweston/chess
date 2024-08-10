@@ -2,10 +2,13 @@ package service;
 
 import chess.*;
 import dataaccess.mysql.MySQLAuthDAO;
+import server.Server;
 import websocket.messages.*;
 import dataaccess.*;
 import dataaccess.mysql.*;
 import model.*;
+
+import java.util.Collection;
 
 public class WebSocketService {
     private static MySQLGameDAO gameDAO;
@@ -20,7 +23,7 @@ public class WebSocketService {
         }
     }
 
-    public ServerMessage[] connect(String authToken, Integer gameID) throws ErrorException{
+    public ServerMessage[] connect(String authToken, Integer gameID) {
         try {
             GameData gameData = gameDAO.getGame(gameID);
             LoadGameMessage loadMessage = new LoadGameMessage(gameData.game());
@@ -42,20 +45,32 @@ public class WebSocketService {
 
             return new ServerMessage[]{loadMessage, notificationMessage};
         } catch (DataAccessException e) {
-            throw new ErrorException(400, e.getMessage());
+            return new ServerMessage[]{new ErrorMessage("Unable to connect user")};
         }
 
     }
 
-    public ServerMessage[] makeMove(String authToken, Integer gameID, ChessMove move) throws ErrorException{
-        return null;
+    public ServerMessage[] makeMove(String authToken, Integer gameID, ChessMove move){
+        try {
+            ChessGame game = gameDAO.getGame(gameID).game();
+            //verify move is a valid move
+            Collection<ChessMove> validMoves = game.validMoves(move.getStartPosition());
+            if (!validMoves.contains(move)) {
+                //invalid move
+                return new ServerMessage[]{new ErrorMessage("Invalid move")};
+            }
+            //valid move, update game
+
+        } catch (DataAccessException e) {
+            return new ServerMessage[]{new ErrorMessage("Unable to make move")};
+        }
     }
 
-    public ServerMessage leaveGame(String authToken, Integer gameID) throws ErrorException{
+    public ServerMessage leaveGame(String authToken, Integer gameID){
         return new NotificationMessage("message");
     }
 
-    public ServerMessage resignGame(String authToken, Integer gameID) throws ErrorException{
+    public ServerMessage resignGame(String authToken, Integer gameID){
         return null;
     }
 }
