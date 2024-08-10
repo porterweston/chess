@@ -7,6 +7,9 @@ import websocket.commands.*;
 import service.*;
 import websocket.messages.*;
 
+import java.io.IOException;
+import java.util.Set;
+
 @WebSocket
 public class WebSocketHandler {
     private final WebSocketSessions sessions = new WebSocketSessions();
@@ -68,13 +71,23 @@ public class WebSocketHandler {
         sendBroadcast(command.getGameID(), message, null);
     }
 
-    //sends a message to a given session
-    private void sendMessage(ServerMessage message, Session session) {
-
+    //sends a message object to a given session
+    private void sendMessage(ServerMessage message, Session session) throws ErrorException{
+        String str = new Gson().toJson(message);
+        try {
+            session.getRemote().sendString(str);
+        } catch (IOException e) {
+            throw new ErrorException(400, "Unable to send message to client");
+        }
     }
 
     //sends a message to all sessions excluding the given session
-    private void sendBroadcast(Integer gameID, ServerMessage message, Session exceptThisSession) {
-
+    private void sendBroadcast(Integer gameID, ServerMessage message, Session exceptThisSession) throws ErrorException{
+        Set<Session> sessionSet = sessions.getSessionsForGame(gameID);
+        for (Session s : sessionSet) {
+            if (!s.equals(exceptThisSession)) {
+                sendMessage(message, s);
+            }
+        }
     }
 }
