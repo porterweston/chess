@@ -42,13 +42,6 @@ public class ObservingUI extends GameUI implements GameHandler {
     }
 
     @Override
-    public String leave() throws ResponseException {
-        checkConnection();
-        Repl.state = State.LOGGED_IN;
-        return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Leaving game...");
-    }
-
-    @Override
     public void updateGame(ChessGame game){
         try {
             redraw();
