@@ -93,7 +93,22 @@ public class GameplayUI extends GameUI implements GameHandler{
 
     private String highlight(String[] params) throws ResponseException {
         checkConnection();
-        return null;
+
+        //ensure good input
+        if (params.length != 1) {
+            throw new ResponseException(400, "bad request");
+        }
+        if (!params[0].matches("^[a-h][1-8]$")) {
+            throw new ResponseException(400, "bad request");
+        }
+
+        int row = Integer.parseInt(String.valueOf(params[0].charAt(1)));
+        int col = readCol(params[0].charAt(0));
+        ChessPosition position = new ChessPosition(row, col);
+
+        BoardRenderer.renderValidMoves(UI.getGame(UI.currentGameID), team, position);
+
+        return "";
     }
 
     @Override
