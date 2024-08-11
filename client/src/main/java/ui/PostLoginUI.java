@@ -119,11 +119,17 @@ public class PostLoginUI extends UI{
             if (params[1].equals("black")) {
                 playerColor = ChessGame.TeamColor.BLACK;
             }
+
+            team = playerColor;
             int gameID = gameIDs.get(Integer.parseInt(params[0]));
             facade.joinGame(new JoinGameRequest(authToken, playerColor, gameID));
             Repl.state = State.IN_GAME;
             currentGameID = gameID;
-            BoardRenderer.render(getGame(currentGameID));
+
+            //websocket
+            ws = new WebSocketFacade(8080, gameHandler);
+            ws.connect(authToken, currentGameID);
+
             return "";
         }
         catch (NullPointerException e) {
@@ -150,8 +156,14 @@ public class PostLoginUI extends UI{
         } catch (Exception e) {
             return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Game doesn't exist");
         }
+
         Repl.state = State.OBSERVING_GAME;
-        BoardRenderer.render(getGame(currentGameID));
+        team = ChessGame.TeamColor.WHITE;
+
+        //websocket
+        ws = new WebSocketFacade(8080, gameHandler);
+        ws.connect(authToken, currentGameID);
+
         return "";
     }
 

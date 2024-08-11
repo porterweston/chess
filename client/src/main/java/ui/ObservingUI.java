@@ -1,13 +1,34 @@
 package ui;
 
+import chess.ChessGame;
 import facade.ResponseException;
+import org.glassfish.grizzly.http.server.Response;
 import reqres.LogoutRequest;
 
 import java.util.Arrays;
 
-public class ObservingUI extends GameUI {
+public class ObservingUI extends GameUI implements GameHandler {
     public ObservingUI() {
         super();
+        gameHandler = this;
+    }
+
+    @Override
+    public String eval(String line) {
+        var tokens = line.toLowerCase().split(" ");
+        var cmd = tokens[0];
+        var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+        try {
+            return switch (cmd) {
+                case "help" -> help();
+                case "quit" -> quit();
+                case "redraw" -> redraw();
+                case "leave" -> leave();
+                default -> help();
+            };
+        } catch (ResponseException e) {
+            return handleError(e.errorCode);
+        }
     }
 
     @Override
@@ -18,5 +39,27 @@ public class ObservingUI extends GameUI {
                         "leave - game",
                         "quit - the application",
                         "help - with available commands"));
+    }
+
+    @Override
+    public String leave() throws ResponseException {
+        checkConnection();
+        Repl.state = State.LOGGED_IN;
+        return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE, "Leaving game...");
+    }
+
+    @Override
+    public void updateGame(ChessGame game){
+        try {
+            redraw();
+            Repl.printPrompt();
+        } catch (ResponseException e) {
+            handleError(e.errorCode);
+        }
+    }
+
+    @Override
+    public void printMessage(String message) {
+        System.out.printf("%s%s%n", EscapeSequences.SET_TEXT_COLOR_YELLOW, message);
     }
 }

@@ -9,10 +9,13 @@ import java.util.HashMap;
 
 public abstract class UI {
     public static ServerFacade facade;
+    public static WebSocketFacade ws;
+    public static GameHandler gameHandler;
     public static String authToken;
     //map where the key is the client's gameID and the value is the server's gameID
     public static HashMap<Integer, Integer> gameIDs;
     public static int currentGameID;
+    public static ChessGame.TeamColor team;
 
     public UI() {
         facade = new ServerFacade(8080);

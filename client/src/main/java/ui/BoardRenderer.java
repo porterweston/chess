@@ -11,7 +11,7 @@ public class BoardRenderer {
     private static ChessPosition curPos;
     private static ChessGame chessGame;
 
-    public static void render(ChessGame game) {
+    public static void render(ChessGame game, ChessGame.TeamColor team) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         chessGame = game;
 
@@ -19,9 +19,12 @@ public class BoardRenderer {
 
         out.print("\n\n");
 
-        renderWhiteBottom(out);
-        out.print("\n\n");
-        renderBlackBottom(out);
+        if (team == ChessGame.TeamColor.WHITE) {
+            renderWhiteBottom(out);
+        }
+        else {
+            renderBlackBottom(out);
+        }
 
         out.print("\n\n");
     }

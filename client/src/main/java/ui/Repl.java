@@ -38,20 +38,14 @@ public class Repl {
             switch (state) {
                 case LOGGED_OUT -> result = preLoginUI.eval(input);
                 case LOGGED_IN -> result = postLoginUI.eval(input);
-                case IN_GAME -> {
-                    BoardRenderer.render(UI.getGame(UI.currentGameID));
-                    result = gameplayUI.eval(input);
-                }
-                case OBSERVING_GAME -> {
-                    BoardRenderer.render(UI.getGame(UI.currentGameID));
-                    result = observingUI.eval(input);
-                }
+                case IN_GAME -> result = gameplayUI.eval(input);
+                case OBSERVING_GAME -> result = observingUI.eval(input);
             }
             System.out.printf("%s%n", result);
         }
     }
 
-    private void printPrompt() {
+    public static void printPrompt() {
         System.out.printf("%s%s[%s] >>> %s", EscapeSequences.SET_TEXT_BOLD, EscapeSequences.SET_TEXT_COLOR_WHITE, state,
             EscapeSequences.RESET_TEXT_BOLD_FAINT);
     }

@@ -1,14 +1,14 @@
 package ui;
 
 import chess.ChessGame;
-import facade.ResponseException;
-import reqres.LogoutRequest;
+import facade.*;
 
 import java.util.Arrays;
 
 public class GameplayUI extends GameUI implements GameHandler{
     public GameplayUI() {
         super();
+        gameHandler = this;
     }
 
     @Override
@@ -20,6 +20,11 @@ public class GameplayUI extends GameUI implements GameHandler{
             return switch (cmd) {
                 case "help" -> help();
                 case "quit" -> quit();
+                case "redraw" -> redraw();
+                case "leave" -> leave();
+                case "move" -> move(params);
+                case "resign" -> resign();
+                case "highlight" -> highlight(params);
                 default -> help();
             };
         } catch (ResponseException e) {
@@ -41,15 +46,29 @@ public class GameplayUI extends GameUI implements GameHandler{
 
     }
 
-    private void redraw() throws ResponseException{
+    private String move(String[] params) throws ResponseException {
         checkConnection();
+        return null;
     }
 
-    private void
+    private String resign() throws ResponseException {
+        checkConnection();
+        return null;
+    }
+
+    private String highlight(String[] params) throws ResponseException {
+        checkConnection();
+        return null;
+    }
 
     @Override
-    public void updateGame(ChessGame game) {
-
+    public void updateGame(ChessGame game){
+        try {
+            redraw();
+            Repl.printPrompt();
+        } catch (ResponseException e) {
+            handleError(e.errorCode);
+        }
     }
 
     @Override
