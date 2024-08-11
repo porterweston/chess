@@ -18,7 +18,7 @@ public class WebSocketHandler {
 
     @OnWebSocketError
     public void onError(Session session, Throwable t) throws ErrorException{
-        throw new ErrorException(400, "Web Socket Error");
+        throw new ErrorException(400, t.getMessage());
     }
 
     @OnWebSocketMessage
@@ -28,7 +28,7 @@ public class WebSocketHandler {
         //determine command type
         switch (c.getCommandType()) {
             case UserGameCommand.CommandType.CONNECT -> connect(session, c);
-            case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(session, c);
+            case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(session, command);
             case UserGameCommand.CommandType.LEAVE -> leaveGame(session, c);
             case UserGameCommand.CommandType.RESIGN -> resignGame(session, c);
         }
@@ -41,8 +41,9 @@ public class WebSocketHandler {
         sendBroadcast(command.getGameID(), messages[1], session);
     }
 
-    private void makeMove(Session session, UserGameCommand command) throws ErrorException{
-        var messages = service.makeMove(command.getAuthToken(), command.getGameID(), ((MakeMoveCommand) command).getMove());
+    private void makeMove(Session session, String c) throws ErrorException{
+        MakeMoveCommand command = new Gson().fromJson(c, MakeMoveCommand.class);
+        var messages = service.makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
         if (messages[0].getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
             sendMessage(messages[0], session);
         }
@@ -62,7 +63,12 @@ public class WebSocketHandler {
 
     private void resignGame(Session session, UserGameCommand command) throws ErrorException{
         var message = service.resignGame(command.getAuthToken(), command.getGameID());
-        sendBroadcast(command.getGameID(), message, null);
+        if (!(message.getServerMessageType() == ServerMessage.ServerMessageType.ERROR)) {
+            sendBroadcast(command.getGameID(), message, null);
+        }
+        else {
+            sendMessage(message, session);
+        }
     }
 
     //sends a message object to a given session
