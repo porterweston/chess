@@ -13,7 +13,7 @@ public class ObservingUI extends GameUI {
     @Override
     public String help() {
         return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE,
-                String.format("%s%n%s%n%s%n%s%n",
+                String.format("%s%n%s%n%s%n%s",
                         "redraw - the chess board",
                         "leave - game",
                         "quit - the application",

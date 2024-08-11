@@ -13,7 +13,7 @@ public class GameplayUI extends GameUI{
     @Override
     public String help() {
         return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE,
-                String.format("%s%n%s%n%s%n%s%n%s%n%s%n%s%n",
+                String.format("%s%n%s%n%s%n%s%n%s%n%s%n%s",
                         "redraw - the chess board",
                         "leave - the game",
                         "move <POSITION> <POSITION> - a chess piece",

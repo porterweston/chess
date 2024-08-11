@@ -46,6 +46,7 @@ public class WebSocketHandler {
         var messages = service.makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
         if (messages[0].getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
             sendMessage(messages[0], session);
+            return;
         }
         sendBroadcast(command.getGameID(), messages[0], null);
         sendBroadcast(command.getGameID(), messages[1], session);

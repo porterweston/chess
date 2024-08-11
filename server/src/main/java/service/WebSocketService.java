@@ -55,8 +55,20 @@ public class WebSocketService {
 
     public ServerMessage[] makeMove(String authToken, Integer gameID, ChessMove move){
         try {
-            ChessGame game = gameDAO.getGame(gameID).game();
+            GameData gameData = gameDAO.getGame(gameID);
+            ChessGame game = gameData.game();
             String username = authDAO.getAuth(authToken).username();
+            if (game.getGameOverStatus()) {
+                return new ServerMessage[]{new ErrorMessage("Game is over")};
+            }
+            ChessGame.TeamColor pieceColor = null;
+            if (game.getBoard().getPiece(move.getStartPosition()) != null) {
+                pieceColor = game.getBoard().getPiece(move.getStartPosition()).getTeamColor();
+            }
+            if ((username.equals(gameData.whiteUsername()) && pieceColor == ChessGame.TeamColor.BLACK) ||
+                    (username.equals(gameData.blackUsername()) && pieceColor == ChessGame.TeamColor.WHITE)) {
+                return new ServerMessage[]{new ErrorMessage("Can't move other player's piece")};
+            }
             game.makeMove(move);
             LoadGameMessage loadMessage = new LoadGameMessage(game);
             NotificationMessage notificationMessage = new NotificationMessage(
