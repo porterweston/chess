@@ -15,11 +15,21 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor teamTurn;
+    private boolean over;
 
     public ChessGame() {
         this.board = new ChessBoard();
         this.board.resetBoard();
         this.setTeamTurn(TeamColor.WHITE);
+        this.over = false;
+    }
+
+    public void setGameOver() {
+        this.over = true;
+    }
+
+    public boolean getGameOverStatus() {
+        return this.over;
     }
 
     /**
@@ -79,6 +89,9 @@ public class ChessGame {
         if (this.board.getPiece(move.getStartPosition()) == null ||
                 this.board.getPiece(move.getStartPosition()).getTeamColor() != this.teamTurn ) {
             throw new InvalidMoveException("Invalid move");
+        }
+        if (over) {
+            throw new InvalidMoveException("Game is over");
         }
         //check to see if this move is a valid move
         Collection<ChessMove> validMoves = this.validMoves(move.getStartPosition());

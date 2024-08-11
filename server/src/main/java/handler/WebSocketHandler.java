@@ -8,6 +8,7 @@ import service.*;
 import websocket.messages.*;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 @WebSocket
@@ -16,7 +17,7 @@ public class WebSocketHandler {
     private final WebSocketService service = new WebSocketService();
 
     @OnWebSocketError
-    public void onError(Throwable throwable) throws ErrorException{
+    public void onError(Session session, Throwable t) throws ErrorException{
         throw new ErrorException(400, "Web Socket Error");
     }
 
@@ -27,7 +28,7 @@ public class WebSocketHandler {
         //determine command type
         switch (c.getCommandType()) {
             case UserGameCommand.CommandType.CONNECT -> connect(session, c);
-            case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(session, (MakeMoveCommand)c);
+            case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(session, c);
             case UserGameCommand.CommandType.LEAVE -> leaveGame(session, c);
             case UserGameCommand.CommandType.RESIGN -> resignGame(session, c);
         }
@@ -40,8 +41,11 @@ public class WebSocketHandler {
         sendBroadcast(command.getGameID(), messages[1], session);
     }
 
-    private void makeMove(Session session, MakeMoveCommand command) throws ErrorException{
-        var messages = service.makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
+    private void makeMove(Session session, UserGameCommand command) throws ErrorException{
+        var messages = service.makeMove(command.getAuthToken(), command.getGameID(), ((MakeMoveCommand) command).getMove());
+        if (messages[0].getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+            sendMessage(messages[0], session);
+        }
         sendBroadcast(command.getGameID(), messages[0], null);
         sendBroadcast(command.getGameID(), messages[1], session);
         //move resulted in check/checkmate/stalemate
@@ -73,11 +77,24 @@ public class WebSocketHandler {
 
     //sends a message to all sessions excluding the given session
     private void sendBroadcast(Integer gameID, ServerMessage message, Session exceptThisSession) throws ErrorException{
+        var removeList = new HashSet<Session>();
         Set<Session> sessionSet = sessions.getSessionsForGame(gameID);
         for (Session s : sessionSet) {
-            if (!s.equals(exceptThisSession)) {
-                sendMessage(message, s);
+            if (s.isOpen()) {
+                if (exceptThisSession == null) {
+                    sendMessage(message, s);
+                }
+                else if (!s.equals(exceptThisSession)) {
+                    sendMessage(message, s);
+                }
             }
+            else {
+                removeList.add(s);
+            }
+        }
+
+        for (Session s : removeList) {
+            sessions.removeSession(s);
         }
     }
 }

@@ -34,13 +34,16 @@ public class WebSocketService {
             String blackUser = gameData.blackUsername();
             NotificationMessage notificationMessage;
             if (username.equals(whiteUser)) {
-                notificationMessage = new NotificationMessage(String.format("%s has joined the game as white", username));
+                notificationMessage = new NotificationMessage(
+                        String.format("%s has joined the game as white", username));
             }
             else if (username.equals(blackUser)) {
-                notificationMessage = new NotificationMessage(String.format("%s has joined the game as black", username));
+                notificationMessage = new NotificationMessage(
+                        String.format("%s has joined the game as black", username));
             }
             else {
-                notificationMessage = new NotificationMessage(String.format("%s has joined the game as an observer", username));
+                notificationMessage = new NotificationMessage(
+                        String.format("%s has joined the game as an observer", username));
             }
 
             return new ServerMessage[]{loadMessage, notificationMessage};
@@ -53,24 +56,57 @@ public class WebSocketService {
     public ServerMessage[] makeMove(String authToken, Integer gameID, ChessMove move){
         try {
             ChessGame game = gameDAO.getGame(gameID).game();
-            //verify move is a valid move
-            Collection<ChessMove> validMoves = game.validMoves(move.getStartPosition());
-            if (!validMoves.contains(move)) {
-                //invalid move
-                return new ServerMessage[]{new ErrorMessage("Invalid move")};
+            String username = authDAO.getAuth(authToken).username();
+            game.makeMove(move);
+            LoadGameMessage loadMessage = new LoadGameMessage(game);
+            NotificationMessage notificationMessage = new NotificationMessage(
+                    String.format("%s moved %s from %s to %s", username,
+                            game.getBoard().getPiece(move.getStartPosition()).getPieceType().toString(),
+                            move.getStartPosition().toString(), move.getEndPosition().toString()));
+            //if in check/checkmate/stalemate
+            ChessGame.TeamColor team = game.getTeamTurn();
+            NotificationMessage statusMessage = null;
+            if (game.isInCheck(team)) {
+                statusMessage = new NotificationMessage(String.format("%s is in check", username));
             }
-            //valid move, update game
-
+            else if (game.isInCheckmate(team)) {
+                statusMessage = new NotificationMessage(
+                        String.format("%s is in checkmate", username));
+            }
+            else if (game.isInStalemate(team)) {
+                statusMessage = new NotificationMessage("Game is in stalemate");
+            }
+            return new ServerMessage[]{loadMessage, notificationMessage, statusMessage};
         } catch (DataAccessException e) {
             return new ServerMessage[]{new ErrorMessage("Unable to make move")};
+        } catch (InvalidMoveException e) {
+            return new ServerMessage[]{new ErrorMessage(e.getMessage())};
         }
     }
 
     public ServerMessage leaveGame(String authToken, Integer gameID){
-        return new NotificationMessage("message");
+        try {
+            String username = authDAO.getAuth(authToken).username();
+            return new NotificationMessage(String.format("%s has left the game", username));
+        } catch (DataAccessException e) {
+            return new ErrorMessage("Unable to leave game");
+        }
     }
 
     public ServerMessage resignGame(String authToken, Integer gameID){
-        return null;
+        try {
+            GameData gameData = gameDAO.getGame(gameID);
+            ChessGame game = gameData.game();
+            String username = authDAO.getAuth(authToken).username();
+            game.setGameOver();
+            //check if user is an observer or game is already over
+            if (!(gameData.whiteUsername().equals(username)) || (!(gameData.blackUsername().equals(username))) ||
+                game.getGameOverStatus()) {
+                return new ErrorMessage("Unable to resign game");
+            }
+            return new NotificationMessage(String.format("%s has resigned", username));
+        } catch (DataAccessException e) {
+            return new ErrorMessage("Unable to resign game");
+        }
     }
 }

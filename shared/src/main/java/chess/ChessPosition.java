@@ -60,6 +60,17 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        return String.format("%d, %d", this.row, this.col);
+        String col = "";
+        switch (this.col) {
+            case 1 -> col = "a";
+            case 2 -> col = "b";
+            case 3 -> col = "c";
+            case 4 -> col = "d";
+            case 5 -> col = "e";
+            case 6 -> col = "f";
+            case 7 -> col = "g";
+            case 8 -> col = "h";
+        }
+        return String.format("%d%s", this.row, col);
     }
 }
