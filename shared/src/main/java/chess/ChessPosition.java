@@ -71,6 +71,6 @@ public class ChessPosition {
             case 7 -> col = "g";
             case 8 -> col = "h";
         }
-        return String.format("%d%s", this.row, col);
+        return String.format("%s%d", col, this.row);
     }
 }

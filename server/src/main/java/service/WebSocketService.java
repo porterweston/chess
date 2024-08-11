@@ -58,6 +58,14 @@ public class WebSocketService {
             GameData gameData = gameDAO.getGame(gameID);
             ChessGame game = gameData.game();
             String username = authDAO.getAuth(authToken).username();
+            //get opponent's username
+            String opponentUsername = null;
+            if (username.equals(gameData.whiteUsername())) {
+                opponentUsername = gameData.blackUsername();
+            }
+            else if (username.equals(gameData.blackUsername())) {
+                opponentUsername = gameData.whiteUsername();
+            }
 
             //check if game is over
             if (game.getGameOverStatus()) {
@@ -94,12 +102,12 @@ public class WebSocketService {
             //if in check-checkmate-stalemate
             ChessGame.TeamColor team = game.getTeamTurn();
             NotificationMessage statusMessage = null;
-            if (game.isInCheck(team)) {
-                statusMessage = new NotificationMessage(String.format("%s is in check", username));
+            if (game.isInCheck(team) && !game.isInCheckmate(team)) {
+                statusMessage = new NotificationMessage(String.format("%s is in check", opponentUsername));
             }
             else if (game.isInCheckmate(team)) {
                 statusMessage = new NotificationMessage(
-                        String.format("%s is in checkmate", username));
+                        String.format("%s is in checkmate%nGame is over%n", opponentUsername));
             }
             else if (game.isInStalemate(team)) {
                 statusMessage = new NotificationMessage("Game is in stalemate");
