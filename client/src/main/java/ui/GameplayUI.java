@@ -1,13 +1,30 @@
 package ui;
 
+import chess.ChessGame;
 import facade.ResponseException;
 import reqres.LogoutRequest;
 
 import java.util.Arrays;
 
-public class GameplayUI extends GameUI{
+public class GameplayUI extends GameUI implements GameHandler{
     public GameplayUI() {
         super();
+    }
+
+    @Override
+    public String eval(String line) {
+        var tokens = line.toLowerCase().split(" ");
+        var cmd = tokens[0];
+        var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+        try {
+            return switch (cmd) {
+                case "help" -> help();
+                case "quit" -> quit();
+                default -> help();
+            };
+        } catch (ResponseException e) {
+            return handleError(e.errorCode);
+        }
     }
 
     @Override
@@ -22,5 +39,21 @@ public class GameplayUI extends GameUI{
                         "quit - the application",
                         "help - with available commands"));
 
+    }
+
+    private void redraw() throws ResponseException{
+        checkConnection();
+    }
+
+    private void
+
+    @Override
+    public void updateGame(ChessGame game) {
+
+    }
+
+    @Override
+    public void printMessage(String message) {
+        System.out.printf("%s%s%n", EscapeSequences.SET_TEXT_COLOR_YELLOW, message);
     }
 }
