@@ -58,9 +58,13 @@ public class WebSocketService {
             GameData gameData = gameDAO.getGame(gameID);
             ChessGame game = gameData.game();
             String username = authDAO.getAuth(authToken).username();
+
+            //check if game is over
             if (game.getGameOverStatus()) {
                 return new ServerMessage[]{new ErrorMessage("Game is over")};
             }
+
+            //check if user is trying to move other team's piece
             ChessGame.TeamColor pieceColor = null;
             if (game.getBoard().getPiece(move.getStartPosition()) != null) {
                 pieceColor = game.getBoard().getPiece(move.getStartPosition()).getTeamColor();
@@ -69,11 +73,24 @@ public class WebSocketService {
                     (username.equals(gameData.blackUsername()) && pieceColor == ChessGame.TeamColor.WHITE)) {
                 return new ServerMessage[]{new ErrorMessage("Can't move other player's piece")};
             }
+
+            //check if observer is trying to make move
+            if (!username.equals(gameData.whiteUsername()) && !username.equals(gameData.blackUsername())) {
+                return new ServerMessage[]{new ErrorMessage("Can't make a move as an observer")};
+            }
+
+            //make the move
             game.makeMove(move);
             LoadGameMessage loadMessage = new LoadGameMessage(game);
             NotificationMessage notificationMessage = new NotificationMessage(
                     String.format("%s moved from %s to %s", username,
                             move.getStartPosition().toString(), move.getEndPosition().toString()));
+
+            //update game in database
+            GameData newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(),
+                    gameData.gameName(), game);
+            gameDAO.updateGame(gameData, newGameData);
+
             //if in check-checkmate-stalemate
             ChessGame.TeamColor team = game.getTeamTurn();
             NotificationMessage statusMessage = null;
@@ -123,11 +140,24 @@ public class WebSocketService {
             GameData gameData = gameDAO.getGame(gameID);
             ChessGame game = gameData.game();
             String username = authDAO.getAuth(authToken).username();
+
+            //check if game is already over
+            if (game.getGameOverStatus()) {
+                return new ErrorMessage("Game is over");
+            }
+
             //check if user is an observer or game is already over
             if ((!(gameData.whiteUsername().equals(username)) && (!(gameData.blackUsername().equals(username))))) {
                 return new ErrorMessage("Unable to resign game");
             }
+
             game.setGameOver();
+
+            //update game in database
+            GameData newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(),
+                    gameData.gameName(), game);
+            gameDAO.updateGame(gameData, newGameData);
+
             return new NotificationMessage(String.format("%s has resigned", username));
         } catch (DataAccessException e) {
             return new ErrorMessage("Unable to resign game");
