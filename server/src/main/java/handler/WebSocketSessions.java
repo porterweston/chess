@@ -8,32 +8,32 @@ import java.util.Map;
 import java.util.Set;
 
 public class WebSocketSessions {
-    private static final Map<Integer, Set<Session>> sessionMap = new HashMap<>();
+    private static final Map<Integer, Set<Session>> SessionMap = new HashMap<>();
 
     public void addSessionToGame(Integer gameID, Session session) {
-        sessionMap.computeIfAbsent(gameID, k -> new HashSet<Session>());
-        Set<Session> sessionSet = sessionMap.get(gameID);
+        SessionMap.computeIfAbsent(gameID, k -> new HashSet<Session>());
+        Set<Session> sessionSet = SessionMap.get(gameID);
         sessionSet.add(session);
-        sessionMap.put(gameID, sessionSet);
+        SessionMap.put(gameID, sessionSet);
     }
 
     public void removeSessionFromGame(Integer gameID, Session session) {
-        if (!(sessionMap.get(gameID) == null)) {
-            Set<Session> sessionSet = sessionMap.get(gameID);
+        if (!(SessionMap.get(gameID) == null)) {
+            Set<Session> sessionSet = SessionMap.get(gameID);
             sessionSet.remove(session);
-            sessionMap.put(gameID, sessionSet);
+            SessionMap.put(gameID, sessionSet);
         }
     }
 
     public void removeSession(Session session) {
-        for (Integer gameID : sessionMap.keySet()) {
-            Set<Session> sessionSet = sessionMap.get(gameID);
+        for (Integer gameID : SessionMap.keySet()) {
+            Set<Session> sessionSet = SessionMap.get(gameID);
             sessionSet.remove(session);
-            sessionMap.put(gameID, sessionSet);
+            SessionMap.put(gameID, sessionSet);
         }
     }
 
     public Set<Session> getSessionsForGame(Integer gameID) {
-        return sessionMap.get(gameID);
+        return SessionMap.get(gameID);
     }
 }

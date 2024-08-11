@@ -1,9 +1,15 @@
 package ui;
 
+import chess.ChessGame;
 import facade.*;
 import reqres.LogoutRequest;
 
-public abstract class GameUI extends UI{
+public abstract class GameUI extends UI implements GameHandler{
+    public GameUI() {
+        super();
+        gameHandler = this;
+    }
+
     public abstract String help();
 
     public String leave() throws ResponseException {
@@ -27,5 +33,19 @@ public abstract class GameUI extends UI{
     public String quit() throws ResponseException {
         leave();
         return super.quit();
+    }
+
+    public void updateGame(ChessGame game){
+        try {
+            redraw();
+            Repl.printPrompt();
+        } catch (ResponseException e) {
+            handleError(e.errorCode);
+        }
+    }
+
+    public void printMessage(String message) {
+        System.out.printf("%s%s%n", EscapeSequences.SET_TEXT_COLOR_YELLOW, message);
+        Repl.printPrompt();
     }
 }

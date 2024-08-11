@@ -10,7 +10,6 @@ import java.util.Arrays;
 public class ObservingUI extends GameUI implements GameHandler {
     public ObservingUI() {
         super();
-        gameHandler = this;
     }
 
     @Override
@@ -39,21 +38,5 @@ public class ObservingUI extends GameUI implements GameHandler {
                         "leave - game",
                         "quit - the application",
                         "help - with available commands"));
-    }
-
-    @Override
-    public void updateGame(ChessGame game){
-        try {
-            redraw();
-            Repl.printPrompt();
-        } catch (ResponseException e) {
-            handleError(e.errorCode);
-        }
-    }
-
-    @Override
-    public void printMessage(String message) {
-        System.out.printf("%s%s%n", EscapeSequences.SET_TEXT_COLOR_YELLOW, message);
-        Repl.printPrompt();
     }
 }

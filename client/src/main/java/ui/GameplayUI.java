@@ -8,7 +8,6 @@ import java.util.Arrays;
 public class GameplayUI extends GameUI implements GameHandler{
     public GameplayUI() {
         super();
-        gameHandler = this;
     }
 
     @Override
@@ -109,22 +108,6 @@ public class GameplayUI extends GameUI implements GameHandler{
         BoardRenderer.renderValidMoves(UI.getGame(UI.currentGameID), team, position);
 
         return "";
-    }
-
-    @Override
-    public void updateGame(ChessGame game){
-        try {
-            redraw();
-            Repl.printPrompt();
-        } catch (ResponseException e) {
-            handleError(e.errorCode);
-        }
-    }
-
-    @Override
-    public void printMessage(String message) {
-        System.out.printf("%s%s%n", EscapeSequences.SET_TEXT_COLOR_YELLOW, message);
-        Repl.printPrompt();
     }
 
     private int readCol(char c) {
