@@ -58,14 +58,7 @@ public class WebSocketService {
             GameData gameData = gameDAO.getGame(gameID);
             ChessGame game = gameData.game();
             String username = authDAO.getAuth(authToken).username();
-            //get opponent's username
-            String opponentUsername = null;
-            if (username.equals(gameData.whiteUsername())) {
-                opponentUsername = gameData.blackUsername();
-            }
-            else if (username.equals(gameData.blackUsername())) {
-                opponentUsername = gameData.whiteUsername();
-            }
+            String opponentUsername = getOpponentUsername(username, gameData);
 
             //check if game is over
             if (game.getGameOverStatus()) {
@@ -94,24 +87,28 @@ public class WebSocketService {
                     String.format("%s moved from %s to %s", username,
                             move.getStartPosition().toString(), move.getEndPosition().toString()));
 
-            //update game in database
-            GameData newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(),
-                    gameData.gameName(), game);
-            gameDAO.updateGame(gameData, newGameData);
-
             //if in check-checkmate-stalemate
             ChessGame.TeamColor team = game.getTeamTurn();
             NotificationMessage statusMessage = null;
             if (game.isInCheck(team) && !game.isInCheckmate(team)) {
                 statusMessage = new NotificationMessage(String.format("%s is in check", opponentUsername));
+                game.setGameOver();
             }
             else if (game.isInCheckmate(team)) {
                 statusMessage = new NotificationMessage(
-                        String.format("%s is in checkmate%nGame is over%n", opponentUsername));
+                        String.format("%s is in checkmate%n%s has won the game!", opponentUsername, username));
+                game.setGameOver();
             }
             else if (game.isInStalemate(team)) {
-                statusMessage = new NotificationMessage("Game is in stalemate");
+                statusMessage = new NotificationMessage("Game is in stalemate%nGame is over");
+                game.setGameOver();
             }
+
+            //update game in database
+            GameData newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(),
+                    gameData.gameName(), game);
+            gameDAO.updateGame(gameData, newGameData);
+
             return new ServerMessage[]{loadMessage, notificationMessage, statusMessage};
         } catch (DataAccessException e) {
             return new ServerMessage[]{new ErrorMessage("Unable to make move")};
@@ -148,6 +145,7 @@ public class WebSocketService {
             GameData gameData = gameDAO.getGame(gameID);
             ChessGame game = gameData.game();
             String username = authDAO.getAuth(authToken).username();
+            String opponentUsername = getOpponentUsername(username, gameData);
 
             //check if game is already over
             if (game.getGameOverStatus()) {
@@ -166,9 +164,21 @@ public class WebSocketService {
                     gameData.gameName(), game);
             gameDAO.updateGame(gameData, newGameData);
 
-            return new NotificationMessage(String.format("%s has resigned", username));
+            return new NotificationMessage(String.format("%s has resigned%n%s has won the game!", username, opponentUsername));
         } catch (DataAccessException e) {
             return new ErrorMessage("Unable to resign game");
         }
+    }
+
+    private String getOpponentUsername(String username, GameData gameData) {
+        //get opponent's username
+        String opponentUsername = null;
+        if (username.equals(gameData.whiteUsername())) {
+            opponentUsername = gameData.blackUsername();
+        }
+        else if (username.equals(gameData.blackUsername())) {
+            opponentUsername = gameData.whiteUsername();
+        }
+        return opponentUsername;
     }
 }
