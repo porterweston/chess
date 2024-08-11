@@ -61,5 +61,6 @@ public class ObservingUI extends GameUI implements GameHandler {
     @Override
     public void printMessage(String message) {
         System.out.printf("%s%s%n", EscapeSequences.SET_TEXT_COLOR_YELLOW, message);
+        Repl.printPrompt();
     }
 }

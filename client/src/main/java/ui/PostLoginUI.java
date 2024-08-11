@@ -14,9 +14,7 @@ public class PostLoginUI extends UI{
 
     @Override
     public String eval(String line) {
-        if (gameIDs.isEmpty()) {
-            initializeGameIDs();
-        }
+        initializeGameIDs();
         var tokens = line.toLowerCase().split(" ");
         var cmd = tokens[0];
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);

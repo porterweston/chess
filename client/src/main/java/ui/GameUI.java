@@ -1,6 +1,7 @@
 package ui;
 
 import facade.*;
+import reqres.LogoutRequest;
 
 public abstract class GameUI extends UI{
     public abstract String help();
@@ -20,5 +21,11 @@ public abstract class GameUI extends UI{
         BoardRenderer.render(UI.getGame(UI.currentGameID), team);
 
         return "";
+    }
+
+    @Override
+    public String quit() throws ResponseException {
+        leave();
+        return super.quit();
     }
 }
