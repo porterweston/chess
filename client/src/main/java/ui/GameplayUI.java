@@ -52,8 +52,16 @@ public class GameplayUI extends GameUI implements GameHandler{
     private String move(String[] params) throws ResponseException {
         checkConnection();
 
+        //ensure good input
         if (params.length != 2 && params.length != 3) {
             throw new ResponseException(400, "bad request");
+        }
+        for (int i=0; i<params.length; i++) {
+            if ((i<2 && !params[i].matches("^[a-h][1-8]$")) ||
+                    (i==2 && (!params[i].equals("knight") && !params[i].equals("bishop") &&
+                            !params[i].equals("rook") && !params[i].equals("queen")))) {
+                throw new ResponseException(400, "bad request");
+            }
         }
 
         int row = Integer.parseInt(String.valueOf(params[0].charAt(1)));
@@ -66,7 +74,7 @@ public class GameplayUI extends GameUI implements GameHandler{
 
         ChessPiece.PieceType type = null;
         if (params.length == 3) {
-            type = ChessPiece.PieceType.valueOf(params[2]);
+            type = ChessPiece.PieceType.valueOf(params[2].toUpperCase());
         }
 
         ChessMove move = new ChessMove(startPos, endPos, type);
