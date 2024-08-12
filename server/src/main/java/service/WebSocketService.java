@@ -92,7 +92,6 @@ public class WebSocketService {
             NotificationMessage statusMessage = null;
             if (game.isInCheck(team) && !game.isInCheckmate(team)) {
                 statusMessage = new NotificationMessage(String.format("%s is in check", opponentUsername));
-                game.setGameOver();
             }
             else if (game.isInCheckmate(team)) {
                 statusMessage = new NotificationMessage(
