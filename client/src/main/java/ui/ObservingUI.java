@@ -23,6 +23,7 @@ public class ObservingUI extends GameUI implements GameHandler {
                 case "quit" -> quit();
                 case "redraw" -> redraw();
                 case "leave" -> leave();
+                case "highlight" -> highlight(params);
                 default -> help();
             };
         } catch (ResponseException e) {
@@ -33,9 +34,11 @@ public class ObservingUI extends GameUI implements GameHandler {
     @Override
     public String help() {
         return String.format("%s%s%n", EscapeSequences.SET_TEXT_COLOR_BLUE,
-                String.format("%s%n%s%n%s%n%s",
+                String.format("%s%n%s%n%s%n%s%n%s%n%s",
                         "redraw - the chess board",
                         "leave - game",
+                        "highlight <POSITION> - legal moves",
+                        "   ex: highlight a2",
                         "quit - the application",
                         "help - with available commands"));
     }
